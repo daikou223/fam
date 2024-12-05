@@ -1,3 +1,6 @@
+//import API from './path/to/API';
+const express = require('express');
+const app = express();
 const mysql = require('mysql2/promise');
 const {NodeSSH}  = require('node-ssh');
 
@@ -30,7 +33,7 @@ async function API(query) {
 
 
     const con = await mysql.createConnection({
-        database: 'daikou223_test',
+        database: 'daikou223_for_family',
         host: '127.0.0.1',
         user: 'daikou223',
         password: 'Kh436528',
@@ -52,4 +55,18 @@ async function API(query) {
       return rows;
 }
 
-API("select * from test")
+const port = process.env.PORT || 4000;
+app.listen(port, () => console.log(`Listening on port ${port}...`));
+app.use(express.json());
+
+
+
+app.get('/api/handler', async (req, res) => {
+    try {
+      const [rows] = await API('SELECT * FROM `user`');
+      res.status(200).json(rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Database query failed' });
+    }
+  });

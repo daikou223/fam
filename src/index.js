@@ -1,10 +1,6 @@
-import React,{useEffect} from 'react';
+import React,{useEffect,useState} from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
-
-const mysql = require('mysql2/promise');
-const {NodeSSH}  = require('node-ssh');
-
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,18 +9,17 @@ root.render(
   </React.StrictMode>
 );
 
+
 function App() {
+  const [data, setData] = useState(null);
+
   useEffect(() => {
-    async function getAPI(){
-      const result  = "SELECT * FROM test";
-      console.log(result);
-    }
-  })
-  return (
-    <div className="App">
-          helop
-    </div>
-  );
+    fetch('http://localhost:3000/api/users')
+      .then((res) => setData(res))
+      //.then((data) => setData(data));
+  }, []);
+  console.log(data);
+  return <div>{data ? data.url : data}</div>;
 }
 
 reportWebVitals();
