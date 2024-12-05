@@ -7,8 +7,7 @@ const {NodeSSH}  = require('node-ssh');
 
 async function API(query) {
     const ssh = new NodeSSH();
-
-    const sshPassword = 'Kh436528';
+    console.log("welcome API")
     
     // 接続
     await ssh.connect({
