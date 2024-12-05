@@ -67,6 +67,6 @@ app.get('/api/handler', async (req, res) => {
       res.status(200).json(rows);
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: 'Database query failed' },{err});
+      res.status(500).json({ error: err });
     }
   });
