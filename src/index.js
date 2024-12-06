@@ -14,15 +14,17 @@ root.render(
 function App() {
   const [data, setData] = useState(null);
   function chasta(sta){
+    let newData = [...data];
+    newData[0].state = sta;
+    console.log(newData);
+    setData(newData);
+    console.log(data)
     axios.post('/api/users',{
       "id":1,
       "state":sta
-    })
-  }
+    });
+  };
   useEffect(() => {
-    /*fetch('http://localhost:4000/api/users')
-      .then((res) => res.JSON())
-      .then((data) => setData(data));*/
       axios
       .get('/api/users')             //リクエストを飛ばすpath
       .then(response => {
