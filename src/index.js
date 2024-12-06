@@ -18,14 +18,6 @@ function App() {
       "id":1,
       "state":sta
     })
-    axios
-      .get('/api/users')             //リクエストを飛ばすpath
-      .then(response => {
-          setData(response.data);
-      })                               //成功した場合、postsを更新する（then）
-      .catch((error) => {
-          console.log('通信に失敗しました',error);
-      }); 
   }
   useEffect(() => {
     /*fetch('http://localhost:4000/api/users')
