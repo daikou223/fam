@@ -21,6 +21,13 @@ function Login(){
   const [user,setUser] = useState("");
   const [pass,setPass] = useState("");
   const [couthin,setCouthin] = useState("");
+  useEffect(()=>{
+  if(localStorage.getItem('id')){
+    console.log(localStorage.getItem('id'));
+    setUser(localStorage.getItem('id'));
+    navigate(`/infom/${localStorage.getItem('id')}`);
+    setCouthin("")
+  }},[])
   function link(user,pass){
     axios
     .post('https://fam-api-psi.vercel.app/api/login',{"id":user,"pass":pass},
@@ -31,6 +38,7 @@ function Login(){
       if(response.data == true){
         navigate(`/infom/${user}`);
         setCouthin("")
+        localStorage.setItem('id',user)
       }
       else{
         setCouthin("passが違います")
