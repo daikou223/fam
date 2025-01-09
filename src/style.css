@@ -29,3 +29,37 @@ ul{
 .mag{
     height:50px
 }
+.center{
+    margin-top:30px;
+    text-align:center;
+}
+.border{
+    border: 1px solid black;
+    border-radius:20px;
+    margin:5px;
+    min-height:10px;
+    padding:10px;
+}
+.border:nth-of-type(2) {
+    background-color: #CCFFFF;
+}
+.border:nth-of-type(3) {
+    background-color: #99FFCC;
+}
+.border:nth-of-type(4) {
+    background-color: #FFCCFF;
+}
+.border:nth-of-type(5) {
+    background-color: #CCCCFF;
+}
+.taskName{
+    margin-left:5px;
+    border:100px solid black;
+}
+.taskContent{
+    margin-left:15px;
+}
+.widebutton{
+    width:300px;
+}
+
