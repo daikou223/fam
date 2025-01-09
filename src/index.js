@@ -98,13 +98,14 @@ function TaskMenu(){
     navigate(`/register/${localStorage.getItem('id')}`,{state:{date:date,id:id},})
   }
   const [date,setDate] = useState(new Date())
-  const [tasks,setTasks] = useState([]);
+  const [tasks,setTasks] = useState([[]]);
   const location = useLocation();
   const id = location.state.id;
   console.log(id);
   const Name = ["こう","だい","はは","ちち"]
   useEffect(() => {
     setTasks([]);
+    console.log(`https://fam-api-psi.vercel.app/api/tasks/${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
     axios
     .get(`https://fam-api-psi.vercel.app/api/tasks/${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`)             //リクエストを飛ばすpath
     .then(response => {
@@ -122,6 +123,7 @@ function TaskMenu(){
           setTasks(personTask);
           console.log(personTask,tasks);
         })
+        setTasks(personTask);
     })                               //成功した場合、postsを更新する（then）
     .catch((error) => {
         console.log('通信に失敗しました',error);
@@ -148,7 +150,7 @@ function TaskMenu(){
           )
         )}</div>))}
         <div className = "center">
-        <button class = "widebutton" onClick = {()=>moveRegist()}>登録</button>
+        <button className = "widebutton" onClick = {()=>moveRegist()}>登録</button>
         </div>
     </div>
   )
