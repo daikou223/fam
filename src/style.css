@@ -44,21 +44,22 @@ ul{
     padding:10px;
     width:90%;
 }
-.border:nth-of-type(2) {
+.border:first-of-type {
     background-color: #CCFFFF;
 }
-.border:nth-of-type(3) {
+.border:nth-of-type(2) {
     background-color: #99FFCC;
 }
-.border:nth-of-type(4) {
+.border:nth-of-type(3) {
     background-color: #FFCCFF;
 }
-.border:nth-of-type(5) {
+.border:nth-of-type(4) {
     background-color: #CCCCFF;
 }
 .taskName{
     margin-left:5px;
     border:100px solid black;
+    font-size:16px;
 }
 .taskcont{
     margin-left:15px;
@@ -72,7 +73,7 @@ ul{
     background-color:#FFCCAA;
     margin-left:15px;
     padding:5px;
-    
+    width:70px;
 }
 .midiamletter{
     margin-top:10px;
@@ -82,4 +83,16 @@ ul{
 }
 .Lmargin{
     margin-left:15px;
+}
+.topmargin{
+    margin-top:10px;
+}
+.Lmargin-memo{
+    margin-left:15px;
+    max-width:100px;
+    overflow: hidden;
+    display: -webkit-box;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
 }
