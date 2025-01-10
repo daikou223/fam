@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
-import styles from "./style.css"
+import styles from "./style.css";
+
+import TaskMenu from './taskdisp';
+import Regist from './register';
 
 //ルート定義部分
 const routesBasic = createBrowserRouter([
@@ -80,130 +83,6 @@ function Login(){
       <p>Pass:<input name = "pass" value = {pass} onChange = {(e)=> setPass(e.target.value)}></input></p>
       <p><button type = "button" onClick ={() => link(user,pass)}>ログイン</button></p>
     </form>
-    </div>
-  )
-}
-
-function TaskMenu(){
-  const navigate = useNavigate();
-  function prev(){
-    setDate(new Date(date.getFullYear(),date.getMonth(),date.getDate()-1));
-    console.log('yesterday');
-  };
-  function next(){
-    setDate(new Date(date.getFullYear(),date.getMonth(),date.getDate()+1));
-    console.log('tommorw');
-  };
-  function moveRegist(){
-    navigate(`/register/${localStorage.getItem('id')}`,{state:{date:date,id:id},})
-  }
-  const [date,setDate] = useState(new Date())
-  const [tasks,setTasks] = useState([[]]);
-  const location = useLocation();
-  const id = location.state.id;
-  console.log(id);
-  const Name = ["こう","だい","はは","ちち"]
-  useEffect(() => {
-    setTasks([]);
-    console.log(`https://fam-api-psi.vercel.app/api/tasks/${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
-    axios
-    .get(`https://fam-api-psi.vercel.app/api/tasks/${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`)             //リクエストを飛ばすpath
-    .then(response => {
-        const result = response.data;
-        console.log(result);
-        const personTask = [[],[],[],[]];
-        result.map((task)=>{
-          let p = 0;
-          for(let i = 0;i<personTask[task.user_id-1].length;i++){
-            if(personTask[task.user_id-1][i].start<task.start){
-              p += 1;
-            }
-          }
-          personTask[task.user_id-1].splice(p,0,task);
-          setTasks(personTask);
-          console.log(personTask,tasks);
-        })
-        setTasks(personTask);
-    })                               //成功した場合、postsを更新する（then）
-    .catch((error) => {
-        console.log('通信に失敗しました',error);
-    });                             //失敗した場合(catch)
-}, [date]);
-  if (tasks.length === 0){
-    return(
-    <div className = "center">
-      <button onClick = {()=>prev()}>&lt;</button> {date.getMonth()+1}月{date.getDate()}日 <button onClick = {()=>next()}>&gt;</button>
-      <p>読み込み中...</p>
-    </div>
-      );
-  };
-  return(
-    <div>
-    <div className = "center">
-      <button onClick = {()=>prev()}>&lt;</button> {date.getMonth()+1}月{date.getDate()}日 <button onClick = {()=>next()}>&gt;</button>
-      </div>
-        {tasks.map((personTask)=>(<div className = "border">{
-          personTask.map((task) => (
-            <div>
-              <OnlyTask task = {task}/>
-            </div>
-          )
-        )}</div>))}
-        <div className = "center">
-        <button className = "widebutton" onClick = {()=>moveRegist()}>登録</button>
-        </div>
-    </div>
-  )
-}
- function OnlyTask({task}){
-  return(
-    <div>
-    <div className = "teskName">{task.taskname}</div><div className = "testContent">開始時間: {task.start} 終了時間: {task.end}</div>
-    </div>
-  )
- }
-
-function Regist(){
-  const location = useLocation();
-  const navigate = useNavigate();
-  console.log(location.state.date);
-  const date = location.state?.date ? new Date(location.state.date) : null;
-  const id = location.state.id;
-  console.log(date);
-  function taskRegist(){
-    const name = document.getElementById("name").value || "名無しの用事";
-    const start = document.getElementById("starttime").value || "00:00";
-    const end = document.getElementById("endtime").value || "23:59";
-    const gototime = document.getElementById("gototime").value || "1:00";
-    const memo = document.getElementById("memo").value || "めもなし";
-    console.log(id,date,name,start,end,gototime,memo);
-    axios.post(
-      'https://fam-api-psi.vercel.app/api/tasks',
-      {userid:id,
-        taskname:name,
-        forgoto:gototime+":00",
-        date:date.getFullYear()+"-"+date.getMonth()+1+"-"+date.getDate(),
-        start:start+":00",
-        end:end+":00",
-        memo:memo
-    }
-    ).then(()=>{
-    navigate(`/infom/${id}`,{state:{id:id},})
-    }
-    );
-  }
-  if (date == null){
-    return(<p>読み込み中...</p>)
-  }
-  return(
-    <div>
-      <h2>{date.getMonth()+1}月{date.getDate()}日 </h2>
-      用事名:<input type="text" id="name"/><br/>
-      開始時刻 : <input type="time" id="starttime"/>
-      &nbsp;終了時刻 : <input type="time" id="endtime"/><br/>
-      移動時間 : <input type="time" id="gototime"/><br/>
-      メモ:<input type="text" id="memo"/><br/>
-      <button className = "widebutton" onClick = {()=>taskRegist()}>登録</button>
     </div>
   )
 }

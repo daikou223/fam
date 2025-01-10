@@ -1,3 +1,6 @@
+*{
+    font-size:14px;
+}
 .name{
     font-size:30px;
 }
@@ -39,6 +42,7 @@ ul{
     margin:5px;
     min-height:10px;
     padding:10px;
+    width:100%;
 }
 .border:nth-of-type(2) {
     background-color: #CCFFFF;
@@ -56,10 +60,26 @@ ul{
     margin-left:5px;
     border:100px solid black;
 }
-.taskContent{
+.taskcont{
     margin-left:15px;
+    display:flex;
 }
 .widebutton{
     width:300px;
 }
-
+.orange{
+    border:1px solid black;
+    background-color:#FFCCAA;
+    margin-left:15px;
+    padding:5px;
+    
+}
+.midiamletter{
+    margin-top:10px;
+}
+.midiambutton{
+    margin:10px;
+}
+.Lmargin{
+    margin-left:15px;
+}
