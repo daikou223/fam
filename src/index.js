@@ -33,7 +33,7 @@ function Login(){
   
   //localStorageにidが保存されているなら，自動ログイン
   useEffect(()=>{
-  if(localStorage.getItem('id')){
+  if(localStorage.getItem('id') <= 4 && localStorage.getItem('id') >= 1 ){
     console.log(localStorage.getItem('id'));
     setUser(localStorage.getItem('id'));
     setCouthin("")
