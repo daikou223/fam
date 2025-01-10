@@ -32,15 +32,20 @@ function Login(){
   const [couthin,setCouthin] = useState("");
   
   //localStorageにidが保存されているなら，自動ログイン
-  useEffect(()=>{
-  if(localStorage.getItem('id') <= 4 && localStorage.getItem('id') >= 1 ){
-    console.log(localStorage.getItem('id'));
-    setUser(localStorage.getItem('id'));
-    setCouthin("")
-  }},[])
-  useEffect(()=>{
-    navigate(`/infom/${localStorage.getItem('id')}`,{state:{id:user}});
-  },[user])
+  // 自動ログインのuseEffect
+    useEffect(() => {
+      const storedId = localStorage.getItem('id');
+      
+      // 数値として1〜4の範囲かを確認
+      if (storedId && Number(storedId) >= 1 && Number(storedId) <= 4) {
+        console.log(storedId);
+        setUser(storedId);
+        setCouthin("");
+
+        // 自動ログイン後に遷移
+        navigate(`/infom/${storedId}`, { state: { id: storedId } });
+      }
+    }, []);
   //画面遷移のロジック
   function link(user,pass){
     //passがあっているかどうかを判定する
