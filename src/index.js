@@ -7,12 +7,14 @@ import styles from "./style.css";
 
 import TaskMenu from './taskdisp';
 import Regist from './register';
+import Edit from './edit';
 
 //ルート定義部分
 const routesBasic = createBrowserRouter([
   { path:'/',element:<Login/>},
   { path:'/infom/:id',element:<TaskMenu/>},
   { path: '/register/:id',element:<Regist/>},
+  { path: '/edit/:id',element:<Edit/>},
   { path: '*', element: <div>404: Page Not Found</div> }
 ])
 const root = ReactDOM.createRoot(document.getElementById('root'));

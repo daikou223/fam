@@ -79,7 +79,6 @@ function TaskMenu(){
       })                               //成功した場合、postsを更新する（then）
       .catch((error) => {
           console.log('通信に失敗しました',error);
-          return(<p>えらーが発生しました．{error}</p>)
       });                             //失敗した場合(catch)
   }, [date]);
     if (tasks.length !== 4){
@@ -111,7 +110,7 @@ function TaskMenu(){
                 出発時刻:{hometime[i][0].disp()} &rarr;&nbsp;帰宅時刻:{hometime[i][1].disp()}
             {tasks[i].map((task, index) => (
             <div key={index} className = "topmargin">
-                <OnlyTask task={task} />
+                <OnlyTask task={task} userId = {i+1} />
             </div>
             ))}
             
@@ -123,11 +122,15 @@ function TaskMenu(){
         </div></div>)
         }}
 
-function OnlyTask({task}){
+function OnlyTask({task,userId}){
     const navigate = useNavigate();
+    const location = useLocation();
+    function moveEdit(id){
+        navigate(`/edit/${id}`)
+    }
     return(
       <div>
-      <div className = "teskName"><b>{task.taskname}</b></div>
+      <div className = "teskName" onClick = {()=>moveEdit(task.task_id)}><b>{task.taskname}</b></div>
       <div className = "taskcont">
         <div className= "orange">開始時間<br/><a className = "Lmargin">{task.starttime.disp()}</a></div><div className= "orange"> 終了時間<br/><a className = "Lmargin">{task.endtime.disp()}</a></div><div className = "Lmargin-memo">{task.memo}</div>
       </div>

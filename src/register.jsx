@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} 
 import styles from "./style.css"
 
 function Regist(){
+    const [registState,setRegistState] = useState("登録");
     const location = useLocation();
     const navigate = useNavigate();
     console.log(location.state.date);
@@ -13,6 +14,9 @@ function Regist(){
     const id = location.state.id;
     console.log(date);
     function taskRegist(){
+        setRegistState("登録中");
+        const button = document.getElementById("regist");
+        button.disabled = true;
       const name = document.getElementById("name").value || "名無しの用事";
       const start = document.getElementById("starttime").value || "00:00";
       const end = document.getElementById("endtime").value || "23:59";
@@ -34,6 +38,9 @@ function Regist(){
       }
       );
     }
+    function back(){
+        navigate(`/infom/${id}`,{state:{id:id},})
+    }
     if (date == null){
       return(<p>読み込み中...</p>)
     }
@@ -41,11 +48,12 @@ function Regist(){
       <div>
         <h2>{date.getMonth()+1}月{date.getDate()}日 </h2>
         用事名:<input type="text" id="name"/><br/>
-        開始時刻 : <input type="time" id="starttime"/>
-        &nbsp;終了時刻 : <input type="time" id="endtime"/><br/>
+        開始時刻 : <input type="time" id="starttime" /><br/>
+        終了時刻 : <input type="time" id="endtime" /><br/>
         移動時間 : <input type="time" id="gototime"/><br/>
         メモ:<input type="text" id="memo"/><br/>
-        <button className = "widebutton" onClick = {()=>taskRegist()}>登録</button>
+        <button className = "widebutton" onClick = {()=>taskRegist()} id = "regist">{registState}</button>
+        <button className = "widebutton" onClick = {()=>back()}>キャンセル</button>
       </div>
     )
   }
