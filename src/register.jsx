@@ -7,11 +7,9 @@ import styles from "./style.css"
 
 function Regist(){
     const [registState,setRegistState] = useState("登録");
-    const location = useLocation();
     const navigate = useNavigate();
-    console.log(location.state.date);
-    const date = location.state?.date ? new Date(location.state.date) : null;
-    const id = location.state.id;
+    const date = new Date();
+    const id = localStorage.getItem('id');
     console.log(date);
     function taskRegist(){
         setRegistState("登録中");
