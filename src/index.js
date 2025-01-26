@@ -13,7 +13,7 @@ import Edit from './edit';
 const routesBasic = createBrowserRouter([
   { path:'/',element:<Login/>},
   { path:'/infom/:id',element:<TaskMenu/>},
-  { path: '/register/:id',element:<Regist/>},
+  { path: '/register',element:<Regist/>},
   { path: '/edit/:id',element:<Edit/>},
   { path: '*', element: <div>404: Page Not Found</div> }
 ])
@@ -93,6 +93,5 @@ function Login(){
     </div>
   )
 }
-
 
 reportWebVitals();

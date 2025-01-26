@@ -33,55 +33,72 @@ function TaskMenu(){
         const second = diffsec % 60;
         return new Time(hour,minute,second)
     }
-    const navigate = useNavigate();
     function prev(){
-      setTasks([]);
+      setTasks([[],[],[],[]]);
       setDate(new Date(date.getFullYear(),date.getMonth(),date.getDate()-1));
     };
     function next(){
-      setTasks([]);
+      setTasks([[],[],[],[]]);
       setDate(new Date(date.getFullYear(),date.getMonth(),date.getDate()+1));
     };
-    function moveRegist(){
-      navigate(`/register/${localStorage.getItem('id')}`,{state:{date:date,id:id},})
+    function toDate(dateString){
+      const seprate = dateString.split(/[T-]/);
+      return new Date(Number(seprate[0]),Number(seprate[1])-1,Number(seprate[2]));
     }
     const [date,setDate] = useState(new Date())
-    const [tasks,setTasks] = useState([[]]);
+    const [tasks,setTasks] = useState([[],[],[],[]]);
+    const [allTasks,setAllTasks] = useState({});
     const location = useLocation();
     const id = location.state.id;
-    const Name = ["こう","だい","はは","ちち"]
+    const Name = ["こう","だい","はは","ちち"];
+    let personTask = [[],[],[],[]];
     useEffect(() => {
-      setTasks([]);
+      setTasks([[],[],[],[]]);
       axios
-      .get(`https://fam-api-psi.vercel.app/api/tasks/${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`)             //リクエストを飛ばすpath
+      .get(`https://fam-api-psi.vercel.app/api/tasks`)             //リクエストを飛ばすpath
       .then(response => {
-          const result = response.data;
+          let result = response.data;
           console.log(result);
-          const personTask = [[],[],[],[]];
+          let allTask = {};
           result.map((task)=>{
-            let p = 0;
-            console.log(task);
-            task.starttime = new Time(...task.start.split(":"));
-            task.endtime = new Time(...task.end.split(":"));
-            task.gototime = new Time(...task.forgoto.split(":"));
-            if(task.user_id >=1 && task.user_id <= 4){
-            for(let i = 0;i<personTask[task.user_id-1].length;i++){
-              if(personTask[task.user_id-1][i].start<task.start){
-                p += 1;
-              }
+            task.date = toDate(task.date);
+            if(!(task.date in allTask)){
+              allTask[task.date] = [task]
             }
-            personTask[task.user_id-1].splice(p,0,task);
-            console.log(personTask,tasks);
-          }
+            else{
+              allTask[task.date].push(task)
+            }
           })
-          setTasks(personTask);
-          console.log(personTask);
+          setAllTasks(allTask);
       })                               //成功した場合、postsを更新する（then）
       .catch((error) => {
           console.log('通信に失敗しました',error);
       });                             //失敗した場合(catch)
-  }, [date]);
-    if (tasks.length !== 4){
+  }, []);
+  useEffect(()=>{
+    personTask = [[],[],[],[]];
+    console.log(date,allTasks);
+    if(date in allTasks){
+    allTasks[date].map((task)=>{
+      let p = 0;
+      task.starttime = new Time(...task.start.split(":"));
+      task.endtime = new Time(...task.end.split(":"));
+      task.gototime = new Time(...task.forgoto.split(":"));
+      if(task.user_id >=1 && task.user_id <= 4){
+      for(let i = 0;i<personTask[task.user_id-1].length;i++){
+        if(personTask[task.user_id-1][i].start<task.start){
+          p += 1;
+        }
+      }
+      personTask[task.user_id-1].splice(p,0,task);
+      console.log(personTask,tasks);
+    }
+    })
+  }
+    setTasks(personTask);
+    console.log(personTask);
+},[date])
+    if (Object.keys(allTasks).length == 0 || tasks == []){
       return(
       <div className = "center">
         <p>読み込み中...</p>
@@ -92,13 +109,13 @@ function TaskMenu(){
                     [new Time(0,0,0),new Time(0,0,0)],
                     [new Time(0,0,0),new Time(0,0,0)],
                     [new Time(0,0,0),new Time(0,0,0)]];
+    console.log(tasks);
     for(let i = 0;i<4;i++){
         if(tasks[i].length >= 1){
             hometime[i][0] = timeSubstruct(tasks[i][0].starttime,tasks[i][0].gototime);
             hometime[i][1] = timeAdd(tasks[i][tasks[i].length-1].endtime,tasks[i][tasks[i].length-1].gototime);
         }
     }
-    console.log(tasks);
     return(
         <div>
         <div className = "center">
@@ -113,12 +130,9 @@ function TaskMenu(){
                 <OnlyTask task={task} userId = {i+1} />
             </div>
             ))}
-            
         </div>
         ))}
-        <div className = "center">
-          <button className = "widebutton" onClick = {()=>moveRegist()}>登録</button>
-          </div>
+        <MainMenu/>
         </div></div>)
         }}
 
@@ -138,5 +152,21 @@ function OnlyTask({task,userId}){
     )
 }
 
+function MainMenu(){
+  const navigate = useNavigate();
+  function moveRegist(){
+    navigate(`/register`)
+  }
+  return(
+    <div className = "buttons">
+      <div className = "Menubutton">
+        週間予定確認
+      </div>
+      <div className = "Menubutton" onClick = {()=>{moveRegist()}}>
+        予定登録
+      </div>
+    </div>
+  )
+}
   
 export default TaskMenu;
