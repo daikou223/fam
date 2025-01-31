@@ -72,7 +72,7 @@ function Edit(){
         ).then(
             response=>{
                 console.log('post成功');
-                navigate(`/`);
+                navigate(`/infom`);
             }
         )
     }
@@ -87,7 +87,7 @@ function Edit(){
         ).then(
             response=>{
                 console.log('delete成功');
-                navigate(`/`);
+                navigate(`/infom`);
             }
         )
     }

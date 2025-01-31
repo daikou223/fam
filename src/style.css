@@ -109,3 +109,16 @@ ul{
 .buttons{
     display:flex;
 }
+.nbsp{
+    height:15px;
+}
+.weekTable tr:nth-of-type(odd){
+    background-color:lightblue;
+}
+.weekTable{
+    border-collapse:collapse ;
+    text-align:center;
+}
+.weekTable tr th{
+    width:100px;
+}

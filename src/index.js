@@ -8,13 +8,16 @@ import styles from "./style.css";
 import TaskMenu from './taskdisp';
 import Regist from './register';
 import Edit from './edit';
+import Week from './week';
+
 
 //ルート定義部分
 const routesBasic = createBrowserRouter([
   { path:'/',element:<Login/>},
-  { path:'/infom/:id',element:<TaskMenu/>},
+  { path:'/infom',element:<TaskMenu/>},
   { path: '/register',element:<Regist/>},
   { path: '/edit/:id',element:<Edit/>},
+  { path: '/week',element:<Week/>},
   { path: '*', element: <div>404: Page Not Found</div> }
 ])
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -45,7 +48,7 @@ function Login(){
         setCouthin("");
 
         // 自動ログイン後に遷移
-        navigate(`/infom/${storedId}`, { state: { id: storedId } });
+        navigate(`/infom`);
       }
     }, []);
   //画面遷移のロジック
@@ -60,7 +63,7 @@ function Login(){
       if(response.data == true){
         //passが一致した時ローカルストレージに保存し，画面遷移
         setUser(localStorage.getItem('id'));
-        navigate(`/infom/${user}`,{state:{id:{user}},});
+        navigate(`/infom`);
         setCouthin("")
         localStorage.setItem('id',user)
       }
