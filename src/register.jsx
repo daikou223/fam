@@ -26,7 +26,7 @@ function Regist(){
         {userid:id,
           taskname:name,
           forgoto:gototime+":00",
-          date:date.getFullYear()+"-"+date.getMonth()+1+"-"+date.getDate(),
+          date:date.getFullYear()+"-"+Number(date.getMonth()+1)+"-"+date.getDate(),
           start:start+":00",
           end:end+":00",
           memo:memo
@@ -49,7 +49,7 @@ function Regist(){
     }
     return(
       <div>
-        日付:<input type="date" id="date" value = {`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${date.getDate()}`} onChange = {(e)=>changeDate(e)}/><br/>
+        日付:<input type="date" id="date" value = {`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`} onChange = {(e)=>changeDate(e)}/>({["日","月","火","水","木","金","土"][date.getDay()]}曜日)<br/>
         用事名:<input type="text" id="name"/><br/>
         開始時刻 : <input type="time" id="starttime" /><br/>
         終了時刻 : <input type="time" id="endtime" /><br/>

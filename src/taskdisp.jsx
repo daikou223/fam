@@ -52,12 +52,16 @@ function TaskMenu(){
       setTasks([[],[],[],[]]);
       setDate(new Date(date.getFullYear(),date.getMonth(),date.getDate()+1));
     };
+    //Dateのみにする関数
+    function DateToString(date){
+      return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+    }
     //yy:mm:ddをTime型にする
     function toDate(dateString){
       const seprate = dateString.split(/[T-]/);
       return new Date(Number(seprate[0]),Number(seprate[1])-1,Number(seprate[2]));
     }
-    const [date,setDate] = useState(new Date())
+    const [date,setDate] = useState(new Date());
     const [tasks,setTasks] = useState([[],[],[],[]]);
     const [allTasks,setAllTasks] = useState({});
     let personTask = [[],[],[],[]];
@@ -72,15 +76,14 @@ function TaskMenu(){
           let allTask = {};
           result.map((task)=>{
             task.date = toDate(task.date);
-            if(!(task.date in allTask)){
-              allTask[task.date] = [task]
+            if(!(DateToString(task.date) in allTask)){
+              allTask[DateToString(task.date)] = [task]
             }
             else{
-              allTask[task.date].push(task)
+              allTask[DateToString(task.date)].push(task)
             }
           })
           setAllTasks({...allTask});
-          setDate(new Date(date.getFullYear(),date.getMonth(),date.getDate()))
       })                               //成功した場合、postsを更新する（then）
       .catch((error) => {
           console.log('通信に失敗しました',error);
@@ -88,10 +91,8 @@ function TaskMenu(){
   }, []);
   useEffect(()=>{
     personTask = [[],[],[],[]];
-    console.log(date,allTasks);
-    console.log(date in allTasks);
-    if(date in allTasks){
-    allTasks[date].map((task)=>{
+    if(DateToString(date) in allTasks){
+    allTasks[DateToString(date)].map((task)=>{
       let p = 0;
       task.starttime = new Time(...task.start.split(":"));
       task.endtime = new Time(...task.end.split(":"));
@@ -109,7 +110,7 @@ function TaskMenu(){
   }
     setTasks(personTask);
     console.log(personTask);
-},[date])
+},[date,allTasks])
     if (Object.keys(allTasks).length == 0 || tasks == []){
       return(
       <div className = "center">
