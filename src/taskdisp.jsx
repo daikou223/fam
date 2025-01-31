@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} 
 import styles from "./style.css"
 
 function TaskMenu(){
+  //時間をつかさどるためのクラス定義
     class Time{
         constructor(hour,minute,second){
             this.hour = hour;
@@ -17,7 +18,11 @@ function TaskMenu(){
             return `${String(this.hour).padStart(2,'0')}:${String(this.minute).padStart(2,'0')}`
         }
     }
+    //時間の引き算を定義
     function timeSubstruct(ourTime,otherTime){
+        if(ourTime.toSeconds() === (new Time(0,0,0)).toSeconds()){
+          return ourTime;
+        }
         console.log(ourTime.toSeconds(),otherTime.toSeconds());
         let diffsec = (ourTime.toSeconds()-otherTime.toSeconds())%(24*60*60);
         console.log(diffsec);
@@ -26,21 +31,28 @@ function TaskMenu(){
         const second = diffsec % 60;
         return new Time(hour,minute,second)
     }
+    //時間の足し算を定義
     function timeAdd(ourTime,otherTime){
+        if(ourTime.toSeconds() === (new Time(23,59,59)).toSeconds() || ourTime.toSeconds() === (new Time(23,59,0)).toSeconds()){
+            return ourTime;
+        }
         const diffsec = (ourTime.toSeconds()+otherTime.toSeconds())%84600;
         const hour = Math.floor( diffsec/ 3600);
         const minute = Math.floor((diffsec % 3600) / 60);
         const second = diffsec % 60;
         return new Time(hour,minute,second)
     }
+    //昨日の予定を確認するため
     function prev(){
       setTasks([[],[],[],[]]);
       setDate(new Date(date.getFullYear(),date.getMonth(),date.getDate()-1));
     };
+    //明日の予定を見る関数
     function next(){
       setTasks([[],[],[],[]]);
       setDate(new Date(date.getFullYear(),date.getMonth(),date.getDate()+1));
     };
+    //yy:mm:ddをTime型にする
     function toDate(dateString){
       const seprate = dateString.split(/[T-]/);
       return new Date(Number(seprate[0]),Number(seprate[1])-1,Number(seprate[2]));
@@ -48,9 +60,6 @@ function TaskMenu(){
     const [date,setDate] = useState(new Date())
     const [tasks,setTasks] = useState([[],[],[],[]]);
     const [allTasks,setAllTasks] = useState({});
-    const location = useLocation();
-    const id = location.state.id;
-    const Name = ["こう","だい","はは","ちち"];
     let personTask = [[],[],[],[]];
     useEffect(() => {
       setTasks([[],[],[],[]]);
@@ -59,6 +68,7 @@ function TaskMenu(){
       .then(response => {
           let result = response.data;
           console.log(result);
+          //日付ごとに分配するためのdict
           let allTask = {};
           result.map((task)=>{
             task.date = toDate(task.date);
@@ -69,7 +79,8 @@ function TaskMenu(){
               allTask[task.date].push(task)
             }
           })
-          setAllTasks(allTask);
+          setAllTasks({...allTask});
+          setDate(new Date(date.getFullYear(),date.getMonth(),date.getDate()))
       })                               //成功した場合、postsを更新する（then）
       .catch((error) => {
           console.log('通信に失敗しました',error);
@@ -78,6 +89,7 @@ function TaskMenu(){
   useEffect(()=>{
     personTask = [[],[],[],[]];
     console.log(date,allTasks);
+    console.log(date in allTasks);
     if(date in allTasks){
     allTasks[date].map((task)=>{
       let p = 0;
@@ -109,7 +121,6 @@ function TaskMenu(){
                     [new Time(0,0,0),new Time(0,0,0)],
                     [new Time(0,0,0),new Time(0,0,0)],
                     [new Time(0,0,0),new Time(0,0,0)]];
-    console.log(tasks);
     for(let i = 0;i<4;i++){
         if(tasks[i].length >= 1){
             hometime[i][0] = timeSubstruct(tasks[i][0].starttime,tasks[i][0].gototime);
@@ -117,7 +128,7 @@ function TaskMenu(){
         }
     }
     return(
-        <div>
+        <div translate="no">
         <div className = "center">
           <button onClick = {()=>prev()} className = "midiambutton">&lt;</button><a class = "midiamletter">{date.getMonth()+1}月{date.getDate()}日</a> <button onClick = {()=>next()} className = "midiambutton">&gt;</button>
           </div>
@@ -138,13 +149,15 @@ function TaskMenu(){
 
 function OnlyTask({task,userId}){
     const navigate = useNavigate();
-    const location = useLocation();
-    function moveEdit(id){
-        navigate(`/edit/${id}`)
+    function moveEdit(id,user){
+        let userId = localStorage.getItem('id');
+        if(user == userId){
+          navigate(`/edit/${id}`)
+        }
     }
     return(
       <div>
-      <div className = "teskName" onClick = {()=>moveEdit(task.task_id)}><b>{task.taskname}</b></div>
+      <div className = "teskName" onClick = {()=>moveEdit(task.task_id,task.user_id)}><b>{task.taskname}</b></div>
       <div className = "taskcont">
         <div className= "orange">開始時間<br/><a className = "Lmargin">{task.starttime.disp()}</a></div><div className= "orange"> 終了時間<br/><a className = "Lmargin">{task.endtime.disp()}</a></div><div className = "Lmargin-memo">{task.memo}</div>
       </div>
@@ -157,13 +170,25 @@ function MainMenu(){
   function moveRegist(){
     navigate(`/register`)
   }
+  function moveWeek(){
+    navigate(`/week`)
+  }
+  function moveRegRegist(){
+    navigate(`/register`)
+  }
   return(
-    <div className = "buttons">
-      <div className = "Menubutton">
+    <div>
+      <div className = "nbsp"></div>
+      <div className = "Menubutton" onClick = {()=>{moveWeek()}}>
         週間予定確認
       </div>
+      <div className = "buttons">
       <div className = "Menubutton" onClick = {()=>{moveRegist()}}>
         予定登録
+      </div>
+      <div className = "Menubutton">
+          定期予定(未実装)
+      </div>
       </div>
     </div>
   )

@@ -7,8 +7,8 @@ import styles from "./style.css"
 
 function Regist(){
     const [registState,setRegistState] = useState("登録");
+    const [date,setDate] = useState(new Date());
     const navigate = useNavigate();
-    const date = new Date();
     const id = localStorage.getItem('id');
     console.log(date);
     function taskRegist(){
@@ -32,19 +32,24 @@ function Regist(){
           memo:memo
       }
       ).then(()=>{
-      navigate(`/infom/${id}`,{state:{id:id},})
+      navigate(`/infom`)
       }
       );
     }
     function back(){
-        navigate(`/infom/${id}`,{state:{id:id},})
+        navigate(`/infom`)
+    }
+    function changeDate(e){
+      console.log(e.target.value);
+      const [yy,mm,dd] = e.target.value.split("-");
+      setDate(new Date(yy,mm-1,dd));
     }
     if (date == null){
       return(<p>読み込み中...</p>)
     }
     return(
       <div>
-        <h2>{date.getMonth()+1}月{date.getDate()}日 </h2>
+        日付:<input type="date" id="date" value = {`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${date.getDate()}`} onChange = {(e)=>changeDate(e)}/><br/>
         用事名:<input type="text" id="name"/><br/>
         開始時刻 : <input type="time" id="starttime" /><br/>
         終了時刻 : <input type="time" id="endtime" /><br/>
