@@ -187,9 +187,6 @@ function MainMenu(){
       <div className = "Menubutton" onClick = {()=>{moveRegist()}}>
         予定登録
       </div>
-      <div className = "Menubutton">
-          定期予定(未実装)
-      </div>
       </div>
     </div>
   )
