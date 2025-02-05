@@ -72,8 +72,10 @@ function Regist(){
       console.log(e.target.value);
       const [yy,mm,dd] = e.target.value.split("-");
       setDate(new Date(yy,mm-1,dd));
-      let finishDate = new Date(yy,Number(mm)+2,dd)
+      if(isBulk){
+      let finishDate = new Date(yy,Number(mm)+3,dd)
       setEndDate(`~終了 ${finishDate.getFullYear()}/${finishDate.getMonth()}/${finishDate.getDate()}`)
+      }
     }
     function changeBulk(){
       if(isBulk){
