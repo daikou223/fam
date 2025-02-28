@@ -56,15 +56,18 @@ function TaskMenu(){
     function DateToString(date){
       return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
     }
-    //yy:mm:ddをTime型にする
+    //yyyy-mm-ddをDate型にする
     function toDate(dateString){
       const seprate = dateString.split(/[T-]/);
       return new Date(Number(seprate[0]),Number(seprate[1])-1,Number(seprate[2]));
     }
+
+    //変数群
     const [date,setDate] = useState(new Date());
     const [tasks,setTasks] = useState([[],[],[],[]]);
     const [allTasks,setAllTasks] = useState({});
     let personTask = [[],[],[],[]];
+    const dayToString = ["日","月","火","水","木","金","土"]
     useEffect(() => {
       setTasks([[],[],[],[]]);
       axios
@@ -131,7 +134,7 @@ function TaskMenu(){
     return(
         <div translate="no">
         <div className = "center">
-          <button onClick = {()=>prev()} className = "midiambutton">&lt;</button><a class = "midiamletter">{date.getMonth()+1}月{date.getDate()}日</a> <button onClick = {()=>next()} className = "midiambutton">&gt;</button>
+          <button onClick = {()=>prev()} className = "midiambutton">&lt;</button><a class = "midiamletter">{date.getMonth()+1}月{date.getDate()}日({dayToString[date.getDay()]}曜日)</a> <button onClick = {()=>next()} className = "midiambutton">&gt;</button>
           </div>
           <div>
             {[0, 1, 2, 3].map((i) => (

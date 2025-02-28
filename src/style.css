@@ -65,8 +65,16 @@ ul{
     margin-left:15px;
     display:flex;
 }
-.widebutton{
-    width:300px;
+.registWidebutton{
+    width:150px;
+    background-color:yellowgreen;
+    height:50px;
+}
+.cancelWidebutton{
+    width:150px;
+    background-color:pink;
+    height:50px;
+    margin:10px;
 }
 .orange{
     border:1px solid black;
