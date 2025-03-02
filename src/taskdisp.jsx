@@ -177,20 +177,24 @@ function MainMenu(){
   function moveWeek(){
     navigate(`/week`)
   }
-  function moveRegRegist(){
-    navigate(`/register`)
+  function movediv(){
+    navigate(`/div`)
   }
   return(
     <div>
       <div className = "nbsp"></div>
-      <div className = "Menubutton" onClick = {()=>{moveWeek()}}>
-        週間予定確認
-      </div>
-      <div className = "buttons">
       <div className = "Menubutton" onClick = {()=>{moveRegist()}}>
         予定登録
       </div>
+      <div className = "buttons">
+      <div className = "Menubutton" onClick = {()=>{moveWeek()}}>
+        週間予定確認
       </div>
+      <div className = "Menubutton" onClick = {()=>{movediv()}}>
+        個人日程表作成
+      </div>
+      </div>
+
     </div>
   )
 }
