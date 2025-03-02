@@ -93,7 +93,7 @@ function Edit(){
     }
     if(!task || !task.task_id){
         return(
-            <div>
+            <div class = "center">
                 読み込み中
             </div>
         );
@@ -106,8 +106,8 @@ function Edit(){
             終了時刻 : <input type="time" id="endtime" value = {end} onChange = {endChange}/><br/>
             移動時間 : <input type="time" id="gototime" value = {goto} onChange = {gotoChange}/><br/>
             メモ:<input type="text" id="memo" value = {memo} onChange = {memoChange}/><br/>
-            <button className = "widebutton" id = "update" onClick = {update}>{updateState}</button>
-            <button className = "widebutton" id = "delete" onClick = {()=>dlt(id)}>{deleteState}</button>
+            <button className = "registWidebutton" id = "update" onClick = {update}>{updateState}</button>
+            <button className = "cancelWidebutton" id = "delete" onClick = {()=>dlt(id)}>{deleteState}</button>
           </div>
         );
     }
