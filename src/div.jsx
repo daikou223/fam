@@ -56,6 +56,20 @@ function Week(){
     let [dates,setDates] = useState([]);
     //タスクを取得
     useEffect(() => {
+        if(localStorage.getItem("task")){
+            let result = JSON.parse(localStorage.getItem("task"));
+            let allTask = {};
+          result.map((task)=>{
+            task.date = toDate(task.date);
+            if(!(task.date in allTask)){
+              allTask[task.date] = [task]
+            }
+            else{
+              allTask[task.date].push(task)
+            }
+          })
+          setAllTasks(allTask);
+          }
       setTasks([[],[],[],[]]);
       axios
       .get(`https://fam-api-psi.vercel.app/api/tasks`)             //リクエストを飛ばすpath
