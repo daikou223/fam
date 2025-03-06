@@ -90,7 +90,7 @@ function Regist(){
         }
         );
       }else{
-        let finishDate = new Date(date.getFullYear(),date.getMonth()+3,date.getDate())
+        let finishDate = new Date(date.getFullYear(),date.getMonth()+2,date.getDate())
         let registDate = new Date(date.getFullYear(),date.getMonth(),date.getDate())
         let querys = [];
         let paramses = [];
@@ -123,7 +123,7 @@ function Regist(){
       const [yy,mm,dd] = e.target.value.split("-");
       setDate(new Date(yy,mm-1,dd));
       if(isBulk){
-      let finishDate = new Date(yy,Number(mm)+3,dd)
+      let finishDate = new Date(yy,Number(mm)+2,dd)
       setEndDate(`~終了 ${finishDate.getFullYear()}/${finishDate.getMonth()}/${finishDate.getDate()}`)
       }
     }
@@ -135,7 +135,7 @@ function Regist(){
       }else{
         setBulk(true);
         setDateLabel("開始")
-        let finishDate = new Date(date.getFullYear(),date.getMonth()+4,date.getDate())
+        let finishDate = new Date(date.getFullYear(),date.getMonth()+3,date.getDate())
         setEndDate(`~終了 ${finishDate.getFullYear()}/${finishDate.getMonth()}/${finishDate.getDate()}`)
       }
     }
@@ -144,7 +144,7 @@ function Regist(){
     }
       return(
         <div>
-          3か月一括登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>changeBulk()}/><br/>
+          2か月一括登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>changeBulk()}/><br/>
           {dateLabel}:<input type="date" id="date" value = {`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`} onChange = {(e)=>changeDate(e)}/>({["日","月","火","水","木","金","土"][date.getDay()]}曜日){endDate}<br/>
           用事名:<input type="text" id="name"/><br/>
           開始時刻 : <input type="time" id="starttime" /><br/>
