@@ -67,14 +67,30 @@ function TaskMenu(){
     const [tasks,setTasks] = useState([[],[],[],[]]);
     const [allTasks,setAllTasks] = useState({});
     let personTask = [[],[],[],[]];
-    const dayToString = ["日","月","火","水","木","金","土"]
+    const dayToString = ["日","月","火","水","木","金","土"];
+    let result = "";
     useEffect(() => {
+      if(localStorage.getItem("task")){
+        let result = JSON.parse(localStorage.getItem("task"));
+        let allTask = {};
+        result.map((task)=>{
+            task.date = toDate(task.date);
+            if(!(DateToString(task.date) in allTask)){
+              allTask[DateToString(task.date)] = [task]
+            }
+            else{
+              allTask[DateToString(task.date)].push(task)
+            }
+        })
+        setAllTasks({...allTask});
+      }
       setTasks([[],[],[],[]]);
       axios
       .get(`https://fam-api-psi.vercel.app/api/tasks`)             //リクエストを飛ばすpath
       .then(response => {
-          let result = response.data;
+          result = response.data;
           console.log(result);
+          localStorage.setItem("task",JSON.stringify(result));
           //日付ごとに分配するためのdict
           let allTask = {};
           result.map((task)=>{
