@@ -39,6 +39,11 @@ function Regist(){
       }
     }
     useEffect(()=>{
+      document.getElementById("name").value = "用事";
+      document.getElementById("starttime").value = "00:00";
+      document.getElementById("endtime").value = "23:59";
+      document.getElementById("gototime").value = "00:00";
+      document.getElementById("memo").value = "";
       axios
       .get(`https://fam-api-psi.vercel.app/api/tasks`)             //リクエストを飛ばすpath
       .then(response => {
@@ -62,10 +67,10 @@ function Regist(){
       setRegistState("登録中");
       const button = document.getElementById("regist");
       button.disabled = true;
-      const name = document.getElementById("name").value || "名無しの用事";
+      const name = document.getElementById("name").value || "用事";
       const start = document.getElementById("starttime").value || "00:00";
       const end = document.getElementById("endtime").value || "23:59";
-      const gototime = document.getElementById("gototime").value || "1:00";
+      const gototime = document.getElementById("gototime").value || "0:00";
       const memo = document.getElementById("memo").value || "めもなし";
 
       console.log(id,date,name,start,end,gototime,memo);
