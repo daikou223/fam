@@ -96,7 +96,7 @@ function Week(){
             let targetDate = new Date(date.getFullYear(),date.getMonth(),date.getDate());
             let view = []
             if(Object.keys(allTasks).length != 0){
-                for(let i = 0;i<7;i++){
+                for(let i = 0;i<16;i++){
                     view.push([])
                     if(targetDate in allTasks){
                         allTasks[targetDate].map((task)=>
@@ -121,7 +121,7 @@ function Week(){
     useEffect(() => {
         let tempdate = [new Date()];
         let dated = new Date();
-        for(let i = 1;i<7;i++){
+        for(let i = 1;i<16;i++){
             let tmpdate = new Date(dated.getFullYear(),dated.getMonth(),dated.getDate()+i);
             tempdate.push(tmpdate);
         }
@@ -137,39 +137,23 @@ function Week(){
     }else{
         console.log(views);
     return(
-        <div translate="no">
-            <div className = "flats">
-                { dates[0].getDate() }日({ dayString[dates[0].getDay()] }曜日)<br/>
-                <div className = "non-color-border">
-                    <Task tasks = {views[0]}/>
+        <div>
+            <div>
+            {[...Array(4)].map((_, i) => (
+            <div className="flats" key={i}>
+                {dates.slice(i * 4, (i + 1) * 4).map((date, j) => (
+                <div key={j}>
+                    <div className = "size">
+                    {date.getDate()}日({dayString[date.getDay()]}曜日)<br />
+                    <div className="non-color-border">
+                    <Task tasks={views[i * 4 + j]} />
+                    </div>
+                    </div>
                 </div>
-                { dates[1].getDate() }日({ dayString[dates[1].getDay()] }曜日)<br/>
-                <div className = "non-color-border">
-                    <Task tasks = {views[1]}/>
-                </div>
-                { dates[2].getDate() }日({ dayString[dates[2].getDay()] }曜日)<br/>
-                <div className = "non-color-border">
-                    <Task tasks = {views[2]}/>
-                </div>
-                { dates[3].getDate() }日({ dayString[dates[3].getDay()] }曜日)<br/>
-                <div className = "non-color-border">
-                    <Task tasks = {views[3]}/>
-                </div>
+                ))}
             </div>
-            <div className = "flats">
-                { dates[4].getDate() }日({ dayString[dates[4].getDay()] }曜日)<br/>
-                <div className = "non-color-border">
-                    <Task tasks = {views[4]}/>
-                </div>
-                { dates[5].getDate() }日({ dayString[dates[5].getDay()] }曜日)<br/>
-                <div className = "non-color-border">
-                    <Task tasks = {views[5]}/>
-                </div>
-                { dates[6].getDate() }日({ dayString[dates[6].getDay()] }曜日)<br/>
-                <div className = "non-color-border">
-                    <Task tasks = {views[6]}/>
-                </div>
-            </div>
+            ))}
+        </div>
         <MainMenu/>
         </div>)
         }}
