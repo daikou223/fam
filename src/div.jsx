@@ -160,7 +160,7 @@ function OnlyTask(props){
     let date = StoDate(props.date? props.date:"2024-01-01");
     let task = props.task? props.task:{};
     console.log(date,task);
-    let dayToString = ['日','月','火','水','木','金','土'];
+    let dayToString = ['月','火','水','木','金','土','日'];
     function StoDate(dateString){
         const seprate = dateString.split(/[T-]/);
         return new Date(Number(seprate[0]),Number(seprate[1])-1,Number(seprate[2]));
