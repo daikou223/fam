@@ -4,6 +4,13 @@ import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} 
 import styles from "./style.css"
 
 function Week(){
+    //変数定義**************************
+    let lowData = JSON.parse(localStorage.getItem("task"));
+    let [tasksData,setTaskData] = useState({});
+    let [sortedTasks,setSortedTask] = useState({})
+    let [dates,setDates] = useState([]);
+    let ID = localStorage.getItem("id"); 
+    //時間クラスを作成***************************
     class Time{
         constructor(hour,minute,second){
             this.hour = hour;
@@ -37,7 +44,7 @@ function Week(){
         const second = diffsec % 60;
         return new Time(hour,minute,second)
     }
-    function toDate(dateString){
+    function StoDate(dateString){
       const seprate = dateString.split(/[T-]/);
       return new Date(Number(seprate[0]),Number(seprate[1])-1,Number(seprate[2]));
     }
@@ -45,118 +52,80 @@ function Week(){
         const [hour,minute,second] = TimeString.split(":");
         return new Time(hour,minute,second);
     }
-    const [date,setDate] = useState(new Date());
-    const [lastDate,setLastDate] = useState(new Date(date.getFullYear(),date.getMonth(),date.getDate()+6));
-    const [tasks,setTasks] = useState([[],[],[],[]]);
-    const [allTasks,setAllTasks] = useState({});
-    const Name = ["こう","だい","はは","ちち"];
-    const dayString = ["日","月","火","水","木","金","土"]
-    const id = localStorage.getItem("id");
-    let [views,setviews] = useState([]);
-    let [dates,setDates] = useState([]);
-    //タスクを取得
-    useEffect(() => {
-        if(localStorage.getItem("task")){
-            let result = JSON.parse(localStorage.getItem("task"));
-            let allTask = {};
-          result.map((task)=>{
-            task.date = toDate(task.date);
-            if(!(task.date in allTask)){
-              allTask[task.date] = [task]
+    //関数定義***********************
+    function DateTodisp(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // 月は0から始まるので+1
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+    function generateDate(){
+        let tempDate = new Date();
+        let tempdates = [];
+        let empDict = {};
+        for(let i = 0;i < 7;i++){
+            empDict[DateTodisp(tempDate)] = [];
+            tempdates.push(DateTodisp(tempDate));
+            tempDate.setDate(tempDate.getDate()+1);
+        }
+        setTaskData(empDict);
+        setDates(tempdates);
+    }
+    function selectAndfairing(lowData){
+        let temptasks = {...tasksData};
+        lowData.forEach((task)=>{
+            if(DateTodisp(StoDate(task.date)) in temptasks && task.user_id == ID){
+                temptasks[DateTodisp(StoDate(task.date))].push(task);
             }
-            else{
-              allTask[task.date].push(task)
+        })
+        if(!(dates.length == 0)){
+            for(let i = 0;i < 7;i++){
+                console.log(temptasks[dates[i]]);
+                temptasks[dates[i]].sort((task1,task2) => StoTime(task1.start).toSeconds() - StoTime(task2.start).toSeconds()); 
             }
-          })
-          setAllTasks(allTask);
-          }
-      setTasks([[],[],[],[]]);
-      axios
-      .get(`https://fam-api-psi.vercel.app/api/tasks`)             //リクエストを飛ばすpath
-      .then(response => {
-          let result = response.data;
-          let allTask = {};
-          result.map((task)=>{
-            task.date = toDate(task.date);
-            if(!(task.date in allTask)){
-              allTask[task.date] = [task]
-            }
-            else{
-              allTask[task.date].push(task)
-            }
-          })
-          setAllTasks(allTask);
-      })                               //成功した場合、postsを更新する（then）
-      .catch((error) => {
-          console.log('通信に失敗しました',error);
-      });                             //失敗した場合(catch)
-  }, []);
-  //タスクを整理
+            console.log(temptasks);
+            setSortedTask(temptasks);
+        }
+    }
+    //main部分
     useEffect(()=>{
-            let targetDate = new Date(date.getFullYear(),date.getMonth(),date.getDate());
-            let view = []
-            if(Object.keys(allTasks).length != 0){
-                for(let i = 0;i<16;i++){
-                    view.push([])
-                    if(targetDate in allTasks){
-                        allTasks[targetDate].map((task)=>
-                        {
-                            if(task.user_id == id){
-                            view[i].push(task);
-                            }
-                        }
-                    )
-                    view[i] = view[i].sort(function (a, b) {
-                        return StoTime(a.start).toSeconds() - StoTime(b.start).toSeconds();
-                    });
-                    }
-                    targetDate = new Date(targetDate.getFullYear(),targetDate.getMonth(),targetDate.getDate()+1)
-                }
-                console.log(view,allTasks);
-                setviews(view);
-        }
-        }
-        ,[allTasks])
-    //日付を作る
-    useEffect(() => {
-        let tempdate = [new Date()];
-        let dated = new Date();
-        for(let i = 1;i<16;i++){
-            let tmpdate = new Date(dated.getFullYear(),dated.getMonth(),dated.getDate()+i);
-            tempdate.push(tmpdate);
-        }
-        setDates(tempdate);
-        }
-    ,[])
-    if (Object.keys(allTasks).length == 0 || tasks == [] || views.length == 0){
+        //表示時したい日付(一週間分)を保存
+        generateDate();
+    },[])
+    useEffect(()=>{
+        //生データを日づけごとに選別
+        selectAndfairing(lowData);
+    },[tasksData])
+    if (dates.length == 0){
       return(
       <div className = "center">
         <p>読み込み中...</p>
       </div>
         );
     }else{
-        console.log(views);
-    return(
-        <div>
+        return(
             <div>
-            {[...Array(4)].map((_, i) => (
-            <div className="flats" key={i}>
-                {dates.slice(i * 4, (i + 1) * 4).map((date, j) => (
-                <div key={j}>
-                    <div className = "size">
-                    {date.getDate()}日({dayString[date.getDay()]}曜日)<br />
-                    <div className="non-color-border">
-                    <Task tasks={views[i * 4 + j]} />
-                    </div>
-                    </div>
-                </div>
-                ))}
+            <table className = "weekTable">
+                <tr>
+                    <th className = "nallow-colunm">日</th>
+                    <th className = "nallow-colunm">曜日</th>
+                    <th className = "nallow-colunm">出発時刻</th>
+                    <th className = "wide-colunm">流れ</th>
+                    <th className = "nallow-colunm">帰宅時刻</th>
+                </tr>
+                {
+                    [0,1,2,3,4,5,6].map((i)=>(
+                        <OnlyTask date = {dates[i]} task = {sortedTasks[dates[i]]}/>
+                    ))
+                }
+            </table>
+            <div>
+            <MainMenu/>
             </div>
-            ))}
-        </div>
-        <MainMenu/>
-        </div>)
-        }}
+            </div>
+            )
+        }
+    }
 
 function MainMenu(){
   const navigate = useNavigate();
@@ -181,21 +150,21 @@ function MainMenu(){
   )
 }
 
-function Task(tasks){
-    const [disp,setDisp] = useState([]);
-    useEffect(()=>{
-        console.log(tasks.tasks)
-        if(tasks.tasks.length > 0){
-            let dispd = [];
-            let T = tasks.tasks;
-            dispd.push(<div>{timeSubstruct(StoTime(T[0].start),StoTime(T[0].forgoto)).disp()}</div>)
-            for(let i = 0;i<T.length;i++){
-                dispd.push(<div>{T[i].taskname}</div>)
-            } 
-            dispd.push(<div>{timeAdd(StoTime(T[T.length-1].end),StoTime(T[T.length-1].forgoto)).disp()}</div>)
-            setDisp(dispd);
-        }
-    },[])
+function OnlyTask(props){
+    console.log(props);
+    if(!props.date || !props.task){
+        return(
+            <div>読み込み中</div>
+        )
+    }
+    let date = StoDate(props.date? props.date:"2024-01-01");
+    let task = props.task? props.task:{};
+    console.log(date,task);
+    let dayToString = ['日','月','火','水','木','金','土'];
+    function StoDate(dateString){
+        const seprate = dateString.split(/[T-]/);
+        return new Date(Number(seprate[0]),Number(seprate[1])-1,Number(seprate[2]));
+    }
     class Time{
         constructor(hour,minute,second){
             this.hour = hour;
@@ -208,10 +177,6 @@ function Task(tasks){
         disp(){
             return `${String(this.hour).padStart(2,'0')}:${String(this.minute).padStart(2,'0')}`
         }
-    }
-    function StoTime(TimeString){
-        const [hour,minute,second] = TimeString.split(":");
-        return new Time(hour,minute,second);
     }
     function timeSubstruct(ourTime,otherTime){
         if(ourTime.toSeconds() === (new Time(0,0,0)).toSeconds()){
@@ -233,18 +198,35 @@ function Task(tasks){
         const second = diffsec % 60;
         return new Time(hour,minute,second)
     }
-    if(tasks.tasks.length == 0 || disp.length == 0){
-        return(
-            <div>タスク無し
-            </div>
-        )
+    function StoDate(dateString){
+      const seprate = dateString.split(/[T-]/);
+      return new Date(Number(seprate[0]),Number(seprate[1])-1,Number(seprate[2]));
     }
-    else{
-        console.log(disp);
+    function StoTime(TimeString){
+        const [hour,minute,second] = TimeString.split(":");
+        return new Time(hour,minute,second);
+    }
+    if(task.length == 0){
         return(
-            <div>
-                {disp}
-            </div>
+            <tr>
+                <td>{date.getDate()+1}日</td>
+                <td>{dayToString[date.getDay()]}</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+            </tr>
+        )
+    }else{
+        return(
+        <tr>
+            <td>{date.getDate()+1}日</td>
+            <td>{dayToString[date.getDay()]}</td>
+            <td>{timeSubstruct(StoTime(task[0].start),StoTime(task[0].forgoto)).disp()}</td>
+            <td>{task.map((t)=>(
+            <a>→{t.taskname}</a>
+            ))}→</td>
+            <td>{timeAdd(StoTime(task[task.length-1].end),StoTime(task[task.length-1].forgoto)).disp()}</td>
+        </tr>
         )
     }
 }
