@@ -39,7 +39,7 @@ function Regist(){
       }
     }
     useEffect(()=>{
-      document.getElementById("name").value = "用事";
+      document.getElementById("name").value = "";
       document.getElementById("starttime").value = "00:00";
       document.getElementById("endtime").value = "23:59";
       document.getElementById("gototime").value = "00:00";
@@ -67,7 +67,7 @@ function Regist(){
       setRegistState("登録中");
       const button = document.getElementById("regist");
       button.disabled = true;
-      const name = document.getElementById("name").value || "用事";
+      const name = document.getElementById("name").value || "名前無し";
       const start = document.getElementById("starttime").value || "00:00";
       const end = document.getElementById("endtime").value || "23:59";
       const gototime = document.getElementById("gototime").value || "0:00";
@@ -143,14 +143,14 @@ function Regist(){
       return(<p>読み込み中...</p>)
     }
       return(
-        <div>
-          2か月一括登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>changeBulk()}/><br/>
+        <div class="naka">
+          2か月一括登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>changeBulk()} className="ookiku"/><br/>
           {dateLabel}:<input type="date" id="date" value = {`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`} onChange = {(e)=>changeDate(e)}/>({["日","月","火","水","木","金","土"][date.getDay()]}曜日){endDate}<br/>
-          用事名:<input type="text" id="name"/><br/>
-          開始時刻 : <input type="time" id="starttime" /><br/>
-          終了時刻 : <input type="time" id="endtime" /><br/>
+          <input type="text" id="name" class="naka" placeholder="なにをする？" /><br/>
+          <input type="time" id="starttime" /><a>&rarr;</a>
+          <input type="time" id="endtime" /><br/>
           移動時間 : <input type="time" id="gototime"/><br/>
-          メモ:<input type="text" id="memo"/><br/>
+          <input type="text" id="memo" class="naka" placeholder="メモ"/><br/>
           <button className = "registWidebutton" onClick = {()=>taskRegist()} id = "regist">{registState}</button>
           <button className = "cancelWidebutton" onClick = {()=>back()}>キャンセル</button>
         </div>
