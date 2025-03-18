@@ -152,3 +152,5 @@ ul{
 .weekTable tr th.wide-colunm {
     width: 400px;
 }
+.naka:not(.right){margin:0 auto;text-align:center}
+.ookiku{transform: scale(1.5)}
