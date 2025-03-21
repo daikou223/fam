@@ -154,3 +154,8 @@ ul{
 }
 .naka:not(.right){margin:0 auto;text-align:center}
 .ookiku{transform: scale(1.5)}
+@media print{
+    .Menubutton{
+        display:none
+    }
+}

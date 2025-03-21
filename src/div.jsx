@@ -64,9 +64,9 @@ function Week(){
         let tempdates = [];
         let empDict = {};
         for(let i = 0;i < 7;i++){
+            tempDate.setDate(tempDate.getDate()+1);
             empDict[DateTodisp(tempDate)] = [];
             tempdates.push(DateTodisp(tempDate));
-            tempDate.setDate(tempDate.getDate()+1);
         }
         setTaskData(empDict);
         setDates(tempdates);
@@ -209,7 +209,7 @@ function OnlyTask(props){
     if(task.length == 0){
         return(
             <tr>
-                <td>{date.getDate()+1}日</td>
+                <td>{date.getDate()}日</td>
                 <td>{dayToString[date.getDay()]}</td>
                 <td>-</td>
                 <td>-</td>
