@@ -107,7 +107,7 @@ function Regist(){
         let querys = [];
         let paramses = [];
         while(registDate < finishDate){
-          querys.push("INSERT INTO `task`(`user_id`, `taskname`, `forgoto`, `date`, `start`, `end`, `memo`,`isHome`) VALUES (?,?,?,?,?,?,?)")
+          querys.push("INSERT INTO `task`(`user_id`, `taskname`, `forgoto`, `date`, `start`, `end`, `memo`,`isHome`) VALUES (?,?,?,?,?,?,?,?)")
           paramses.push([id,name,gototime+":00",`${String(registDate.getFullYear()).padStart(2,'0')}-${String(registDate.getMonth()+1).padStart(2,'0')}-${String(registDate.getDate()).padStart(2,'0')}`,start+":00",end+":00",memo,home]);  
           registDate = new Date(registDate.getFullYear(),registDate.getMonth(),registDate.getDate()+7)
           console.log(registDate);
