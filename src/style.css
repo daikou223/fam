@@ -154,6 +154,12 @@ ul{
 }
 .naka:not(.right){margin:0 auto;text-align:center}
 .ookiku{transform: scale(1.5)}
+.cousion{
+    background-color: pink;
+    padding:10px;
+    border:2px solid black;
+    border-radius: 10px;
+}
 @media print{
     .Menubutton{
         display:none

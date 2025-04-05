@@ -3,6 +3,7 @@ import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
 import styles from "./style.css"
 
+//メインページ
 function TaskMenu(){
   //時間をつかさどるためのクラス定義
     class Time{
@@ -69,6 +70,8 @@ function TaskMenu(){
     let personTask = [[],[],[],[]];
     const dayToString = ["日","月","火","水","木","金","土"];
     let result = "";
+    let [cousion,setCousion] = useState("読み込み中のため、前回読み込んだ情報を表示しています");
+    let [cousionClass,setCousionClass] = useState("cousion");
     useEffect(() => {
       if(localStorage.getItem("task")){
         let result = JSON.parse(localStorage.getItem("task"));
@@ -103,6 +106,8 @@ function TaskMenu(){
             }
           })
           setAllTasks({...allTask});
+          setCousion("");
+          setCousionClass("");
       })                               //成功した場合、postsを更新する（then）
       .catch((error) => {
           console.log('通信に失敗しました',error);
@@ -150,6 +155,7 @@ function TaskMenu(){
     return(
         <div translate="no">
         <div className = "center">
+          <p className = {cousionClass}> { cousion }</p>
           <button onClick = {()=>prev()} className = "midiambutton">&lt;</button><a class = "midiamletter">{date.getMonth()+1}月{date.getDate()}日({dayToString[date.getDay()]}曜日)</a> <button onClick = {()=>next()} className = "midiambutton">&gt;</button>
           </div>
           <div>

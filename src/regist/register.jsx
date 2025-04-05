@@ -1,10 +1,11 @@
 import React,{useEffect,useState} from 'react';
 import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
+import reportWebVitals from '../reportWebVitals';
 import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
-import styles from "./style.css"
+import styles from "./../style.css"
 
+//新規予定を登録するようのページ
 function Regist(){
     const [registState,setRegistState] = useState("登録");
     const [date,setDate] = useState(new Date());

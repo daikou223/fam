@@ -6,10 +6,10 @@ import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} 
 import styles from "./style.css";
 
 import TaskMenu from './taskdisp';
-import Regist from './register';
-import Edit from './edit';
-import Week from './week';
-import Div from './div';
+import Regist from './regist/register';
+import Edit from './regist/edit';
+import Week from './display/week';
+import Div from './display/div';
 
 
 //ルート定義部分

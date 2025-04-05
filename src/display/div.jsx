@@ -1,8 +1,9 @@
 import React,{useEffect,useState} from 'react';
 import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
-import styles from "./style.css"
+import styles from "./../style.css"
 
+//個人日程
 function Week(){
     //変数定義**************************
     let lowData = JSON.parse(localStorage.getItem("task"));
