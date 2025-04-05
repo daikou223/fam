@@ -7,16 +7,18 @@ import styles from "./../style.css"
 
 //新規予定を登録するようのページ
 function Regist(){
+    //変数
     const [registState,setRegistState] = useState("登録");
     const [date,setDate] = useState(new Date());
     const [dateLabel,setDateLabel] = useState("日付");
     const [isBulk,setBulk] = useState(false);
+    const [isHome,setIsHome] = useState(false);
     const [endDate,setEndDate] = useState("");
     const [oziStartDate,setOziStartDate] = useState(null);
     const [views,setViews] = useState([]);
     const navigate = useNavigate();
     const id = localStorage.getItem('id');
-    console.log(date);
+    //日付を扱う
     function toDate(dateString){
       const seprate = dateString.split(/[T-]/);
       return new Date(Number(seprate[0]),Number(seprate[1])-1,Number(seprate[2]));
@@ -39,6 +41,7 @@ function Regist(){
           return year1 < year2;
       }
     }
+    //画面レンダリング系
     useEffect(()=>{
       document.getElementById("name").value = "";
       document.getElementById("starttime").value = "00:00";
@@ -64,6 +67,7 @@ function Regist(){
           console.log('通信に失敗しました',error);
       });  
     },[])
+    //登録時に実行する関数
     function taskRegist(){
       setRegistState("登録中");
       const button = document.getElementById("regist");
@@ -71,10 +75,16 @@ function Regist(){
       const name = document.getElementById("name").value || "名前無し";
       const start = document.getElementById("starttime").value || "00:00";
       const end = document.getElementById("endtime").value || "23:59";
-      const gototime = document.getElementById("gototime").value || "0:00";
+      let gototime = "00:00";
+      if(!(isHome)){
+        gototime = document.getElementById("gototime").value || "00:00";
+      }
       const memo = document.getElementById("memo").value || "めもなし";
-
-      console.log(id,date,name,start,end,gototime,memo);
+      let home = 0
+      if(!(isHome)){
+        home = 1
+      }
+      console.log(id,date,name,start,end,gototime,memo,home);
       if(!(isBulk)){
         axios.post(
           'https://fam-api-psi.vercel.app/api/tasks',
@@ -84,7 +94,8 @@ function Regist(){
             date:date.getFullYear()+"-"+Number(date.getMonth()+1)+"-"+date.getDate(),
             start:start+":00",
             end:end+":00",
-            memo:memo
+            memo:memo,
+            isHome:home
         }
         ).then(()=>{
         navigate(`/infom`)
@@ -96,8 +107,8 @@ function Regist(){
         let querys = [];
         let paramses = [];
         while(registDate < finishDate){
-          querys.push("INSERT INTO `task`(`user_id`, `taskname`, `forgoto`, `date`, `start`, `end`, `memo`) VALUES (?,?,?,?,?,?,?)")
-          paramses.push([id,name,gototime+":00",`${String(registDate.getFullYear()).padStart(2,'0')}-${String(registDate.getMonth()+1).padStart(2,'0')}-${String(registDate.getDate()).padStart(2,'0')}`,start+":00",end+":00",memo]);  
+          querys.push("INSERT INTO `task`(`user_id`, `taskname`, `forgoto`, `date`, `start`, `end`, `memo`,`isHome`) VALUES (?,?,?,?,?,?,?)")
+          paramses.push([id,name,gototime+":00",`${String(registDate.getFullYear()).padStart(2,'0')}-${String(registDate.getMonth()+1).padStart(2,'0')}-${String(registDate.getDate()).padStart(2,'0')}`,start+":00",end+":00",memo,home]);  
           registDate = new Date(registDate.getFullYear(),registDate.getMonth(),registDate.getDate()+7)
           console.log(registDate);
         }
@@ -115,10 +126,12 @@ function Regist(){
                 }
             );
         }
-      }
+    }
+    //画面遷移戻し
     function back(){
         navigate(`/infom`)
     }
+    //日付変更時
     function changeDate(e){
       console.log(e.target.value);
       const [yy,mm,dd] = e.target.value.split("-");
@@ -128,6 +141,7 @@ function Regist(){
       setEndDate(`~終了 ${finishDate.getFullYear()}/${finishDate.getMonth()}/${finishDate.getDate()}`)
       }
     }
+    //一括設定変更時
     function changeBulk(){
       if(isBulk){
         setBulk(false);
@@ -140,17 +154,30 @@ function Regist(){
         setEndDate(`~終了 ${finishDate.getFullYear()}/${finishDate.getMonth()}/${finishDate.getDate()}`)
       }
     }
+    //在宅設定変更時
+    function changeHome(){
+      if(isHome){
+        setIsHome(false);
+      }else{
+        setIsHome(true);
+      }
+    }
     if (date == null){
       return(<p>読み込み中...</p>)
     }
       return(
         <div class="naka">
           2か月一括登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>changeBulk()} className="ookiku"/><br/>
+          在宅:<input type = "checkbox" checked = {isHome} onChange = {()=>changeHome()} className="ookiku"/><br/>
           {dateLabel}:<input type="date" id="date" value = {`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`} onChange = {(e)=>changeDate(e)}/>({["日","月","火","水","木","金","土"][date.getDay()]}曜日){endDate}<br/>
           <input type="text" id="name" class="naka" placeholder="なにをする？" /><br/>
           <input type="time" id="starttime" /><a>&rarr;</a>
           <input type="time" id="endtime" /><br/>
-          移動時間 : <input type="time" id="gototime"/><br/>
+          {!isHome && (
+            <>
+              移動時間 : <input type="time" id="gototime"/><br/>
+            </>
+          )}
           <input type="text" id="memo" class="naka" placeholder="メモ"/><br/>
           <button className = "registWidebutton" onClick = {()=>taskRegist()} id = "regist">{registState}</button>
           <button className = "cancelWidebutton" onClick = {()=>back()}>キャンセル</button>

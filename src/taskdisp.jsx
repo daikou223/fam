@@ -142,35 +142,43 @@ function TaskMenu(){
       </div>
         );
     }else{
-    let hometime = [[new Time(0,0,0),new Time(0,0,0)],
-                    [new Time(0,0,0),new Time(0,0,0)],
-                    [new Time(0,0,0),new Time(0,0,0)],
-                    [new Time(0,0,0),new Time(0,0,0)]];
-    for(let i = 0;i<4;i++){
-        if(tasks[i].length >= 1){
-            hometime[i][0] = timeSubstruct(tasks[i][0].starttime,tasks[i][0].gototime);
-            hometime[i][1] = timeAdd(tasks[i][tasks[i].length-1].endtime,tasks[i][tasks[i].length-1].gototime);
+      let hometime = [[new Time(0,0,0),new Time(0,0,0)],
+                      [new Time(0,0,0),new Time(0,0,0)],
+                      [new Time(0,0,0),new Time(0,0,0)],
+                      [new Time(0,0,0),new Time(0,0,0)]];
+      for(let i = 0;i<4;i++){
+        for(let j = 0;j<tasks[i].length;j++){
+          if(tasks[i][j].isHome == 1){
+            hometime[i][0] = timeSubstruct(tasks[i][j].starttime,tasks[i][j].gototime);
+            break
+          }
         }
-    }
-    return(
-        <div translate="no">
-        <div className = "center">
-          <p className = {cousionClass}> { cousion }</p>
-          <button onClick = {()=>prev()} className = "midiambutton">&lt;</button><a class = "midiamletter">{date.getMonth()+1}月{date.getDate()}日({dayToString[date.getDay()]}曜日)</a> <button onClick = {()=>next()} className = "midiambutton">&gt;</button>
-          </div>
-          <div>
-            {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="border">
-                出発時刻:{hometime[i][0].disp()} &rarr;&nbsp;帰宅時刻:{hometime[i][1].disp()}
-            {tasks[i].map((task, index) => (
-            <div key={index} className = "topmargin">
-                <OnlyTask task={task} userId = {i+1} />
+        for(let j = tasks[i].length-1;j>=0;j--){
+          if(tasks[i][j].isHome == 1){
+            hometime[i][1] = timeAdd(tasks[i][j].endtime,tasks[i][j].gototime);
+            break
+          }
+        }
+      }
+      return(
+          <div translate="no">
+          <div className = "center">
+            <p className = {cousionClass}> { cousion }</p>
+            <button onClick = {()=>prev()} className = "midiambutton">&lt;</button><a class = "midiamletter">{date.getMonth()+1}月{date.getDate()}日({dayToString[date.getDay()]}曜日)</a> <button onClick = {()=>next()} className = "midiambutton">&gt;</button>
             </div>
-            ))}
-        </div>
-        ))}
-        <MainMenu/>
-        </div></div>)
+            <div>
+              {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="border">
+                  出発時刻:{hometime[i][0].disp()} &rarr;&nbsp;帰宅時刻:{hometime[i][1].disp()}
+              {tasks[i].map((task, index) => (
+              <div key={index} className = "topmargin">
+                  <OnlyTask task={task} userId = {i+1} />
+              </div>
+              ))}
+          </div>
+          ))}
+          <MainMenu/>
+          </div></div>)
         }}
 
 function OnlyTask({task,userId}){
