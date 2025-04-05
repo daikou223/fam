@@ -21,11 +21,18 @@ function Edit(){
         `https://fam-api-psi.vercel.app/api/task/${id}`
     ).then(
         response=>{
+            console.log(response);
+            if(response.data.length == 0){
+                navigate(`/infom`);
+            }
             const data = response.data[0];
             setTask(data);
         }
-    )
-},[]);
+    ).catch((error) => {
+        console.error("データ取得に失敗しました:", error);
+        navigate(`/infom`);
+    })
+    },[]);
     useEffect(()=>{
         if(task){
             setName(task.taskname);
