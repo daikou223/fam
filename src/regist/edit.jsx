@@ -1,9 +1,9 @@
 import React,{useEffect,useState} from 'react';
 import ReactDOM from 'react-dom/client';
-import reportWebVitals from './reportWebVitals';
+import reportWebVitals from '../reportWebVitals';
 import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
-import styles from "./style.css"
+import styles from "./../style.css"
 
 function Edit(){
     const {id} = useParams();

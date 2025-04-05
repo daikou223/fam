@@ -1,8 +1,9 @@
 import React,{useEffect,useState} from 'react';
 import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
-import styles from "./style.css"
+import styles from "./../style.css"
 
+//家族の一週間の予定を見るやつ
 function Week(){
     class Time{
         constructor(hour,minute,second){
