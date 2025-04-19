@@ -1,0 +1,23 @@
+.questdeadline{
+    margin-left:15px;
+}
+.board{
+    background-color: #5d4037;
+    padding:10px;
+    margin-left:2px;
+    border-radius: 5px;
+}
+.questpaper{
+    background-color: #fff8e1;
+    color:#3e2723;
+    margin:5px;
+    width:90%;
+}
+.thequest_disp{
+    display:flex
+}
+.comp{
+    padding-top:8px;
+    margin-left:35%;
+    
+}

@@ -60,6 +60,7 @@ function Week(){
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       }
+    //一週間分の空辞書を作成
     function generateDate(){
         let tempDate = new Date();
         let tempdates = [];
@@ -74,8 +75,9 @@ function Week(){
     }
     function selectAndfairing(lowData){
         let temptasks = {...tasksData};
+        //日付が範囲内&&自分のデータ&&在宅ではない
         lowData.forEach((task)=>{
-            if(DateTodisp(StoDate(task.date)) in temptasks && task.user_id == ID){
+            if(DateTodisp(StoDate(task.date)) in temptasks && task.user_id == ID && task.isHome == 1){
                 temptasks[DateTodisp(StoDate(task.date))].push(task);
             }
         })
