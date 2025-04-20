@@ -15,6 +15,7 @@ function Edit(){
     const [end,setEnd] = useState("00:00");
     const [goto,setGoto] = useState("00:00");
     const [memo,setMemo] = useState("");
+    const [isHome,setIsHome] = useState(1);
     const navigate = useNavigate();
     useEffect(()=>{
     axios.get(
@@ -40,6 +41,7 @@ function Edit(){
             setEnd(task.end);
             setGoto(task.forgoto);
             setMemo(task.memo);
+            setIsHome(task.isHome);
         }
     },[task]);
     function nameChange(e){
@@ -74,7 +76,8 @@ function Edit(){
                 start:start,
                 end:end,
                 memo:memo,
-                taskid:id
+                taskid:id,
+                isHome:isHome
             }
         ).then(
             response=>{
