@@ -8,7 +8,7 @@ function Week(){
     //変数定義**************************
     let lowData = JSON.parse(localStorage.getItem("task"));
     let [tasksData,setTaskData] = useState({});
-    let [sortedTasks,setSortedTask] = useState({})
+    let [sortedTasks,setSortedTask] = useState([{},{},{},{}])
     let [dates,setDates] = useState([]);
     let ID = localStorage.getItem("id"); 
     //時間クラスを作成***************************
@@ -65,26 +65,38 @@ function Week(){
         let tempDate = new Date();
         let tempdates = [];
         let empDict = {};
+        //一週間分の日付を作成
         for(let i = 0;i < 7;i++){
             tempDate.setDate(tempDate.getDate()+1);
             empDict[DateTodisp(tempDate)] = [];
             tempdates.push(DateTodisp(tempDate));
         }
-        setTaskData(empDict);
+        console.log(empDict);
+        setTaskData({...empDict});
         setDates(tempdates);
     }
     function selectAndfairing(lowData){
-        let temptasks = {...tasksData};
-        //日付が範囲内&&自分のデータ&&在宅ではない
+
+        let temptasks = Array.from({ length: 4 }, () => {
+            const newTaskData = {};
+            for (const key in tasksData) {
+              newTaskData[key] = [...tasksData[key]]; // 配列もコピー
+            }
+            return newTaskData;
+          });          
+        //日付が範囲内&&在宅ではない
         lowData.forEach((task)=>{
-            if(DateTodisp(StoDate(task.date)) in temptasks && task.user_id == ID && task.isHome == 1){
-                temptasks[DateTodisp(StoDate(task.date))].push(task);
+            if(DateTodisp(StoDate(task.date)) in temptasks[0] && task.isHome == 1){
+                temptasks[task.user_id-1][DateTodisp(StoDate(task.date))].push(task);
             }
         })
+        //ここのifはエラー対策なので気にするな..問題ない
         if(!(dates.length == 0)){
-            for(let i = 0;i < 7;i++){
-                console.log(temptasks[dates[i]]);
-                temptasks[dates[i]].sort((task1,task2) => StoTime(task1.start).toSeconds() - StoTime(task2.start).toSeconds()); 
+            //各日付に対して時刻順にする(全員分)
+            for(let j = 0;j<3;j++){
+                for(let i = 0;i < 7;i++){
+                    temptasks[j][dates[i]].sort((task1,task2) => StoTime(task1.start).toSeconds() - StoTime(task2.start).toSeconds()); 
+                }
             }
             console.log(temptasks);
             setSortedTask(temptasks);
@@ -108,6 +120,7 @@ function Week(){
     }else{
         return(
             <div>
+                弟
             <table className = "weekTable">
                 <tr>
                     <th className = "nallow-colunm">日</th>
@@ -118,7 +131,52 @@ function Week(){
                 </tr>
                 {
                     [0,1,2,3,4,5,6].map((i)=>(
-                        <OnlyTask date = {dates[i]} task = {sortedTasks[dates[i]]}/>
+                        <OnlyTask date = {dates[i]} task = {sortedTasks[0][dates[i]]}/>
+                    ))
+                }
+            </table>
+            兄
+            <table className = "weekTable">
+                <tr>
+                    <th className = "nallow-colunm">日</th>
+                    <th className = "nallow-colunm">曜日</th>
+                    <th className = "nallow-colunm">出発時刻</th>
+                    <th className = "wide-colunm">流れ</th>
+                    <th className = "nallow-colunm">帰宅時刻</th>
+                </tr>
+                {
+                    [0,1,2,3,4,5,6].map((i)=>(
+                        <OnlyTask date = {dates[i]} task = {sortedTasks[1][dates[i]]}/>
+                    ))
+                }
+            </table>
+            母
+            <table className = "weekTable">
+                <tr>
+                    <th className = "nallow-colunm">日</th>
+                    <th className = "nallow-colunm">曜日</th>
+                    <th className = "nallow-colunm">出発時刻</th>
+                    <th className = "wide-colunm">流れ</th>
+                    <th className = "nallow-colunm">帰宅時刻</th>
+                </tr>
+                {
+                    [0,1,2,3,4,5,6].map((i)=>(
+                        <OnlyTask date = {dates[i]} task = {sortedTasks[2][dates[i]]}/>
+                    ))
+                }
+            </table>
+            父
+            <table className = "weekTable">
+                <tr>
+                    <th className = "nallow-colunm">日</th>
+                    <th className = "nallow-colunm">曜日</th>
+                    <th className = "nallow-colunm">出発時刻</th>
+                    <th className = "wide-colunm">流れ</th>
+                    <th className = "nallow-colunm">帰宅時刻</th>
+                </tr>
+                {
+                    [0,1,2,3,4,5,6].map((i)=>(
+                        <OnlyTask date = {dates[i]} task = {sortedTasks[3][dates[i]]}/>
                     ))
                 }
             </table>
@@ -154,7 +212,6 @@ function MainMenu(){
 }
 
 function OnlyTask(props){
-    console.log(props);
     if(!props.date || !props.task){
         return(
             <div>読み込み中</div>
@@ -162,7 +219,6 @@ function OnlyTask(props){
     }
     let date = StoDate(props.date? props.date:"2024-01-01");
     let task = props.task? props.task:{};
-    console.log(date,task);
     let dayToString = ['日','月','火','水','木','金','土'];
     function StoDate(dateString){
         const seprate = dateString.split(/[T-]/);
