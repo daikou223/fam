@@ -7,6 +7,10 @@
 ul{
     list-style: none;
 }
+table{
+    margin:10px;
+    border:1px solid black
+}
 .goto{
     margin-left:20px;
     font-size:20px;

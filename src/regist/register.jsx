@@ -69,6 +69,11 @@ function Regist(){
     },[])
     //登録時に実行する関数
     function taskRegist(){
+      let flag = true;
+      if(date <= new Date()){
+        flag = window.confirm('日付が本日かそれ以前ですが\nよろしいですか？');
+      } 
+      if(flag){
       setRegistState("登録中");
       const button = document.getElementById("regist");
       button.disabled = true;
@@ -104,17 +109,14 @@ function Regist(){
       }else{
         let finishDate = new Date(date.getFullYear(),date.getMonth()+2,date.getDate())
         let registDate = new Date(date.getFullYear(),date.getMonth(),date.getDate())
-        let querys = [];
         let paramses = [];
         while(registDate < finishDate){
-          querys.push("INSERT INTO `task`(`user_id`, `taskname`, `forgoto`, `date`, `start`, `end`, `memo`,`isHome`) VALUES (?,?,?,?,?,?,?,?)")
           paramses.push([id,name,gototime+":00",`${String(registDate.getFullYear()).padStart(2,'0')}-${String(registDate.getMonth()+1).padStart(2,'0')}-${String(registDate.getDate()).padStart(2,'0')}`,start+":00",end+":00",memo,home]);  
           registDate = new Date(registDate.getFullYear(),registDate.getMonth(),registDate.getDate()+7)
           console.log(registDate);
         }
         axios.post(`https://fam-api-psi.vercel.app/api/month`,{
-          querys:querys,
-          paramses:paramses
+          values:paramses
             }).then(()=>{
                 console.log("成功");
                 navigate(`/infom`);
@@ -126,6 +128,7 @@ function Regist(){
                 }
             );
         }
+      }
     }
     //画面遷移戻し
     function back(){
