@@ -125,7 +125,8 @@ table{
     height:15px;
 }
 .weekTable tr:nth-of-type(odd){
-    background-color:lightblue;
+    border:1px dotted black;
+    background-color:rgb(212, 226, 231);
 }
 .weekTable{
     border-collapse:collapse ;
@@ -164,8 +165,22 @@ table{
     border:2px solid black;
     border-radius: 10px;
 }
+.selection{
+    background-color: bisque;
+}
 @media print{
     .Menubutton{
         display:none
     }
+}
+.calender{
+    margin:0 auto;
+    text-align:center;
+    margin-top:10px;
+}
+.yyyy-mm{
+    margin:8px;
+}
+.calender th,td{
+    width:30px;
 }

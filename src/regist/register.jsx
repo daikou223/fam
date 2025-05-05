@@ -16,6 +16,7 @@ function Regist(){
     const [endDate,setEndDate] = useState("");
     const [oziStartDate,setOziStartDate] = useState(null);
     const [views,setViews] = useState([]);
+    const [bulkDates,setBulkDates] = useState([]);
     const navigate = useNavigate();
     const id = localStorage.getItem('id');
     //日付を扱う
@@ -70,8 +71,19 @@ function Regist(){
     //登録時に実行する関数
     function taskRegist(){
       let flag = true;
-      if(date <= new Date()){
+      if(date <= new Date() && !(isBulk)){
         flag = window.confirm('日付が本日かそれ以前ですが\nよろしいですか？');
+      } 
+      if(isBulk){
+        let p = false;
+        for(let i = 0;i<bulkDates.length;i++){
+          if(new Date(bulkDates[i]) <= new Date()){
+            p = true;
+          }
+        }
+        if(p){
+          flag = window.confirm('日付が本日かそれ以前が含まれていますが\nよろしいですか？');
+        }
       } 
       if(flag){
       setRegistState("登録中");
@@ -107,13 +119,9 @@ function Regist(){
         }
         );
       }else{
-        let finishDate = new Date(date.getFullYear(),date.getMonth()+2,date.getDate())
-        let registDate = new Date(date.getFullYear(),date.getMonth(),date.getDate())
         let paramses = [];
-        while(registDate < finishDate){
-          paramses.push([id,name,gototime+":00",`${String(registDate.getFullYear()).padStart(2,'0')}-${String(registDate.getMonth()+1).padStart(2,'0')}-${String(registDate.getDate()).padStart(2,'0')}`,start+":00",end+":00",memo,home]);  
-          registDate = new Date(registDate.getFullYear(),registDate.getMonth(),registDate.getDate()+7)
-          console.log(registDate);
+        for(let i = 0;i<bulkDates.length;i++){
+          paramses.push([id,name,gototime+":00",bulkDates[i],start+":00",end+":00",memo,home]);  
         }
         axios.post(`https://fam-api-psi.vercel.app/api/month`,{
           values:paramses
@@ -170,10 +178,13 @@ function Regist(){
     }
       return(
         <div class="naka">
-          2か月一括登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>changeBulk()} className="ookiku"/><br/>
-          在宅:<input type = "checkbox" checked = {isHome} onChange = {()=>changeHome()} className="ookiku"/><br/>
-          {dateLabel}:<input type="date" id="date" value = {`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`} onChange = {(e)=>changeDate(e)}/>({["日","月","火","水","木","金","土"][date.getDay()]}曜日){endDate}<br/>
+          <div className = "multiple">複数日付登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>changeBulk()} className="ookiku"/></div>
+          <div className = "atHome">在宅:<input type = "checkbox" checked = {isHome} onChange = {()=>changeHome()} className="ookiku"/></div>
           <input type="text" id="name" class="naka" placeholder="なにをする？" /><br/>
+          {!isBulk &&(
+          <div>日付:<input type="date" id="date" value = {`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`} onChange = {(e)=>changeDate(e)}/>({["日","月","火","水","木","金","土"][date.getDay()]}曜日)</div>
+          )
+        }
           <input type="time" id="starttime" /><a>&rarr;</a>
           <input type="time" id="endtime" /><br/>
           {!isHome && (
@@ -182,10 +193,120 @@ function Regist(){
             </>
           )}
           <input type="text" id="memo" class="naka" placeholder="メモ"/><br/>
+          {isBulk &&(
+          <Calender bulkDates = {bulkDates} setBulkDates = {setBulkDates}/>
+          )
+          }
           <button className = "registWidebutton" onClick = {()=>taskRegist()} id = "regist">{registState}</button>
           <button className = "cancelWidebutton" onClick = {()=>back()}>キャンセル</button>
         </div>
       )
     }
 
+function Calender(props){
+  //変数定義********************************
+  const [today,setToday] = useState(new Date());
+  const [firstDay,setFirstDay] = useState(new Date(today.getFullYear(),today.getMonth(),1));
+  const [lastDay,setLastDay] = useState(new Date(today.getFullYear(),today.getMonth()+1,0));
+  const [cells,setCells] = useState([]);
+  const [bulkDates,setBulkDates] = [props.bulkDates,props.setBulkDates];
+  //どうでもいい変数
+  //関数定義****************************
+  //日付クラスをyyyy-mm-dd形式に
+  function dateToString(date){
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`
+  }
+  //日付をクリックしたときの処理
+  function selectDate(dayNum){
+    console.log(today.getFullYear(),today.getMonth(),dayNum.i);
+    let date =dateToString(new Date(today.getFullYear(),today.getMonth(),dayNum.i));
+    console.log(date);
+    let bulkDates_ = [...bulkDates];
+    if(bulkDates_.includes(date)){
+      bulkDates_ = bulkDates_.filter(theDate => theDate !== date);
+    }
+    else{
+      bulkDates_.push(date)
+    }
+    console.log(bulkDates_);
+    setBulkDates(bulkDates_)
+  }
+  //曜日をクリック時に一斉二選択
+  function clarenderDay(day){
+    let bulkDates_ = [...bulkDates];
+    for(let i = 1;i<= lastDay.getDate();i++){
+      let serDate = new Date(today.getFullYear(),today.getMonth(),i);
+      let serDateString = dateToString(serDate);
+      if(day == serDate.getDay()){
+        if(bulkDates_.includes(serDateString)){
+          bulkDates_ = bulkDates_.filter(theDate => theDate !== serDateString);
+        }
+        else{
+          bulkDates_.push(serDateString)
+        }
+      }
+    }
+    console.log(bulkDates_);
+    setBulkDates(bulkDates_)
+  }
+  //月の移動を実装
+  function MoveMonth(mode){
+    setToday(new Date(today.getFullYear(),today.getMonth()+mode,today.getDate()))
+    setFirstDay(new Date(firstDay.getFullYear(),firstDay.getMonth()+mode,1));
+    setLastDay(new Date(lastDay.getFullYear(),lastDay.getMonth()+mode,0));
+  }
+  //レンダリング関数*************************
+  //列を作成する
+  function createRow(){
+    let createRow_ = [];
+    for(let i = 0;i<cells.length/7;i++){
+      createRow_.push(<tr>{cells.slice(i*7,(i+1)*7)}</tr>);
+    }
+    return createRow_
+  }
+  //表に色をつける
+  useEffect(()=>{
+    const numToDay =  [6,0,1,2,3,4,5];
+    let cells_ = [];
+    for(let i = -numToDay[firstDay.getDay()]+1;i<= lastDay.getDate() + 6-numToDay[lastDay.getDay()];i++){
+      if(i <= 0){
+        cells_.push(<td></td>)
+      }
+      else if(i <= lastDay.getDate()){
+        if(bulkDates.includes(dateToString(new Date(today.getFullYear(),today.getMonth(),i)))){
+          cells_.push(<td className = "selection" onClick = {()=>selectDate({i})}>{i}</td>)
+        }
+        else{
+          cells_.push(<td onClick = {()=>selectDate({i})}>{i}</td>)
+        }
+      }
+      else{
+        cells_.push(<td></td>)
+      }
+    }
+    setCells(cells_)
+  },[bulkDates,today])
+  //画面校正**********************
+  return(
+    <div>
+      <button onClick = {()=>MoveMonth(-1)}>先月 &lt; </button><a className = "yyyy-mm">{ dateToString(today).slice(0,7) }</a><button onClick = {()=>MoveMonth(1)}>&gt; 翌月</button>
+      <table  className = "calender">
+        <thead>
+          <tr>
+            <th onClick = {()=>clarenderDay(1)}>月</th>
+            <th onClick = {()=>clarenderDay(2)}>火</th>
+            <th onClick = {()=>clarenderDay(3)}>水</th>
+            <th onClick = {()=>clarenderDay(4)}>木</th>
+            <th onClick = {()=>clarenderDay(5)}>金</th>
+            <th onClick = {()=>clarenderDay(6)}>土</th>
+            <th onClick = {()=>clarenderDay(0)}>日</th>
+          </tr>
+        </thead>
+        <tbody>
+          { createRow() }
+        </tbody>
+      </table>
+    </div>
+  )
+}
 export default Regist
