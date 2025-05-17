@@ -11,6 +11,7 @@ import Edit from './regist/edit';
 import Week from './display/week';
 import Div from './display/div';
 import QuestMenu from './quest/questmain';
+import Serch from './serch/taskSerch';
 
 
 //ルート定義部分
@@ -22,6 +23,7 @@ const routesBasic = createBrowserRouter([
   { path: '/week',element:<Week/>},
   { path: '/div',element:<Div/>},
   { path: '/quest',element:<QuestMenu/>},
+  { path: '/serch',element:<Serch/>},
   { path: '*', element: <div>404: Page Not Found</div> }
 ])
 const root = ReactDOM.createRoot(document.getElementById('root'));
