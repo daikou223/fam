@@ -8,9 +8,16 @@ function TaskMenu(){
   //時間をつかさどるためのクラス定義
     class Time{
         constructor(hour,minute,second){
-            this.hour = hour;
-            this.minute = minute;
-            this.second = second;
+          hour = Number(hour)
+          minute = Number(minute)
+          second = Number(second)
+          minute += Math.floor(second/60)
+          second = second%60;
+          hour += Math.floor(minute/60)
+          minute = minute%60
+          this.hour = Number(hour);
+          this.minute = minute;
+          this.second = second
         };
         toSeconds() {
             return Number(this.hour) * 3600 + Number(this.minute) * 60 + Number(this.second);
@@ -24,9 +31,7 @@ function TaskMenu(){
         if(ourTime.toSeconds() === (new Time(0,0,0)).toSeconds()){
           return ourTime;
         }
-        console.log(ourTime.toSeconds(),otherTime.toSeconds());
         let diffsec = (ourTime.toSeconds()-otherTime.toSeconds())%(24*60*60);
-        console.log(diffsec);
         const hour = Math.floor( diffsec/ 3600);
         const minute = Math.floor((diffsec % 3600) / 60);
         const second = diffsec % 60;
@@ -72,6 +77,8 @@ function TaskMenu(){
     let result = "";
     let [cousion,setCousion] = useState("読み込み中のため、前回読み込んだ情報を表示しています");
     let [cousionClass,setCousionClass] = useState("cousion");
+    const MAXTIME = 24*3600-1
+    //初期化のためのEffect
     useEffect(() => {
       if(localStorage.getItem("task")){
         let result = JSON.parse(localStorage.getItem("task"));
@@ -116,21 +123,25 @@ function TaskMenu(){
   useEffect(()=>{
     personTask = [[],[],[],[]];
     if(DateToString(date) in allTasks){
-    allTasks[DateToString(date)].map((task)=>{
-      let p = 0;
-      task.starttime = new Time(...task.start.split(":"));
-      task.endtime = new Time(...task.end.split(":"));
-      task.gototime = new Time(...task.forgoto.split(":"));
-      if(task.user_id >=1 && task.user_id <= 4){
-      for(let i = 0;i<personTask[task.user_id-1].length;i++){
-        if(personTask[task.user_id-1][i].start<task.start){
-          p += 1;
-        }
+      //各日付に対して走査を行う
+      allTasks[DateToString(date)].map((task)=>{
+        task.starttime = new Time(...task.start.split(":"));
+        task.endtime = new Time(...task.end.split(":"));
+        task.gototime = new Time(...task.forgoto.split(":"));
+        //user_idが1,2,3,4のもののみ
+        if(task.user_id >=1 && task.user_id <= 4){
+        /*//すでにあるタスクと時間順にしたいがために導入(sortにした方がいい)
+        for(let i = 0;i<personTask[task.user_id-1].length;i++){
+          if(personTask[task.user_id-1][i].start<task.start){
+            p += 1;
+          }
+        }*/
+        personTask[task.user_id-1].push(task);
       }
-      personTask[task.user_id-1].splice(p,0,task);
-      console.log(personTask,tasks);
-    }
-    })
+      for(let i=0;i<4;i++){
+        personTask[0].sort((task1,task2)=>task1.starttime.toSeconds()-task2.starttime.toSeconds())
+      }
+      })
   }
     setTasks(personTask);
     console.log(personTask);
@@ -142,20 +153,21 @@ function TaskMenu(){
       </div>
         );
     }else{
-      let hometime = [[new Time(0,0,0),new Time(0,0,0)],
-                      [new Time(0,0,0),new Time(0,0,0)],
-                      [new Time(0,0,0),new Time(0,0,0)],
-                      [new Time(0,0,0),new Time(0,0,0)]];
+      let hometime = [[new Time(24,0,0),new Time(-1,0,0)],
+                      [new Time(24,0,0),new Time(-1,0,0)],
+                      [new Time(24,0,0),new Time(-1,0,0)],
+                      [new Time(24,0,0),new Time(-1,0,0)]];
+      console.log(tasks)
       for(let i = 0;i<4;i++){
         for(let j = 0;j<tasks[i].length;j++){
           if(tasks[i][j].isHome == 1){
-            hometime[i][0] = timeSubstruct(tasks[i][j].starttime,tasks[i][j].gototime);
+            hometime[i][0] = new Time(0,0,Math.min(hometime[i][0].toSeconds(),Math.max(timeSubstruct(tasks[i][j].starttime,tasks[i][j].gototime).toSeconds(),0)));
             break
           }
         }
         for(let j = tasks[i].length-1;j>=0;j--){
           if(tasks[i][j].isHome == 1){
-            hometime[i][1] = timeAdd(tasks[i][j].endtime,tasks[i][j].gototime);
+            hometime[i][1] = new Time(0,0,Math.max(hometime[i][1].toSeconds(),Math.min(timeAdd(tasks[i][j].endtime,tasks[i][j].gototime).toSeconds(),MAXTIME)));
             break
           }
         }
@@ -169,7 +181,7 @@ function TaskMenu(){
             <div>
               {[0, 1, 2, 3].map((i) => (
               <div key={i} className="border">
-                  出発時刻:{hometime[i][0].disp()} &rarr;&nbsp;帰宅時刻:{hometime[i][1].disp()}
+                  出発時刻:{hometime[i][0].toSeconds()== MAXTIME+1?<>--:--</>:<>{hometime[i][0].disp()}</>} &rarr;&nbsp;帰宅時刻:{hometime[i][1].toSeconds() < 0?<>--:--</>:<>{hometime[i][1].disp()}</>}
               {tasks[i].map((task, index) => (
               <div key={index} className = "topmargin">
                   <OnlyTask task={task} userId = {i+1} />

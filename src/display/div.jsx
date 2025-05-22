@@ -54,6 +54,7 @@ function Week(){
         return new Time(hour,minute,second);
     }
     //関数定義***********************
+    //Dateクラスをyyyy-mm-ddに
     function DateTodisp(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0'); // 月は0から始まるので+1
