@@ -123,23 +123,25 @@ function TaskMenu(){
   useEffect(()=>{
     personTask = [[],[],[],[]];
     if(DateToString(date) in allTasks){
-    allTasks[DateToString(date)].map((task)=>{
-      let p = 0;
-      task.starttime = new Time(...task.start.split(":"));
-      task.endtime = new Time(...task.end.split(":"));
-      task.gototime = new Time(...task.forgoto.split(":"));
-      //user_idが1,2,3,4のもののみ
-      if(task.user_id >=1 && task.user_id <= 4){
-      //すでにあるタスクと時間順にしたいがために導入(sortにした方がいい)
-      for(let i = 0;i<personTask[task.user_id-1].length;i++){
-        if(personTask[task.user_id-1][i].start<task.start){
-          p += 1;
-        }
+      //各日付に対して走査を行う
+      allTasks[DateToString(date)].map((task)=>{
+        task.starttime = new Time(...task.start.split(":"));
+        task.endtime = new Time(...task.end.split(":"));
+        task.gototime = new Time(...task.forgoto.split(":"));
+        //user_idが1,2,3,4のもののみ
+        if(task.user_id >=1 && task.user_id <= 4){
+        /*//すでにあるタスクと時間順にしたいがために導入(sortにした方がいい)
+        for(let i = 0;i<personTask[task.user_id-1].length;i++){
+          if(personTask[task.user_id-1][i].start<task.start){
+            p += 1;
+          }
+        }*/
+        personTask[task.user_id-1].push(task);
       }
-      personTask[task.user_id-1].splice(p,0,task);
-      console.log(personTask,tasks);
-    }
-    })
+      for(let i=0;i<4;i++){
+        personTask[0].sort((task1,task2)=>task1.starttime.toSeconds()-task2.starttime.toSeconds())
+      }
+      })
   }
     setTasks(personTask);
     console.log(personTask);
@@ -159,14 +161,12 @@ function TaskMenu(){
       for(let i = 0;i<4;i++){
         for(let j = 0;j<tasks[i].length;j++){
           if(tasks[i][j].isHome == 1){
-            //ここを最小値にする(マイナスは許したくない...)
             hometime[i][0] = new Time(0,0,Math.min(hometime[i][0].toSeconds(),Math.max(timeSubstruct(tasks[i][j].starttime,tasks[i][j].gototime).toSeconds(),0)));
             break
           }
         }
         for(let j = tasks[i].length-1;j>=0;j--){
           if(tasks[i][j].isHome == 1){
-            //こっちは最大値(24時以降は不許可)
             hometime[i][1] = new Time(0,0,Math.max(hometime[i][1].toSeconds(),Math.min(timeAdd(tasks[i][j].endtime,tasks[i][j].gototime).toSeconds(),MAXTIME)));
             break
           }
