@@ -175,7 +175,6 @@ function TaskMenu(){
       return(
           <div translate="no">
           <div className = "center">
-            <p className = {cousionClass}> { cousion }</p>
             <button onClick = {()=>prev()} className = "midiambutton">&lt;</button><a class = "midiamletter">{date.getMonth()+1}月{date.getDate()}日({dayToString[date.getDay()]}曜日)</a> <button onClick = {()=>next()} className = "midiambutton">&gt;</button>
             </div>
             <div>
@@ -190,6 +189,7 @@ function TaskMenu(){
           </div>
           ))}
           <MainMenu/>
+          <p className = {cousionClass}> { cousion }</p>
           </div></div>)
         }}
 
