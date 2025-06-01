@@ -2,6 +2,7 @@ import React,{useEffect,useState} from 'react';
 import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
 import styles from "./style.css"
+import Menubar from "./menubar/menubar"
 
 //メインページ
 function TaskMenu(){
@@ -130,13 +131,7 @@ function TaskMenu(){
         task.gototime = new Time(...task.forgoto.split(":"));
         //user_idが1,2,3,4のもののみ
         if(task.user_id >=1 && task.user_id <= 4){
-        /*//すでにあるタスクと時間順にしたいがために導入(sortにした方がいい)
-        for(let i = 0;i<personTask[task.user_id-1].length;i++){
-          if(personTask[task.user_id-1][i].start<task.start){
-            p += 1;
-          }
-        }*/
-        personTask[task.user_id-1].push(task);
+          personTask[task.user_id-1].push(task);
       }
       for(let i=0;i<4;i++){
         personTask[0].sort((task1,task2)=>task1.starttime.toSeconds()-task2.starttime.toSeconds())
@@ -174,6 +169,7 @@ function TaskMenu(){
       }
       return(
           <div translate="no">
+            <Menubar/>
           <div className = "center">
             <button onClick = {()=>prev()} className = "midiambutton">&lt;</button><a class = "midiamletter">{date.getMonth()+1}月{date.getDate()}日({dayToString[date.getDay()]}曜日)</a> <button onClick = {()=>next()} className = "midiambutton">&gt;</button>
             </div>
@@ -188,7 +184,6 @@ function TaskMenu(){
               ))}
           </div>
           ))}
-          <MainMenu/>
           <p className = {cousionClass}> { cousion }</p>
           </div></div>)
         }}
