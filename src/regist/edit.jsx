@@ -4,6 +4,7 @@ import reportWebVitals from '../reportWebVitals';
 import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
 import styles from "./../style.css"
+import Menubar from "../menubar/menubar"
 
 function Edit(){
     const {id} = useParams();
@@ -17,6 +18,15 @@ function Edit(){
     const [memo,setMemo] = useState("");
     const [isHome,setIsHome] = useState(1);
     const navigate = useNavigate();
+    const styles = {
+        warrper:{
+            marginTop:60,
+            marginLeft:30,
+        },
+        title:{
+            fontSize:22
+        }
+    }
     useEffect(()=>{
     axios.get(
         `https://fam-api-psi.vercel.app/api/task/${id}`
@@ -110,7 +120,10 @@ function Edit(){
     }
     else{
         return (
-            <div>
+            <>
+            <Menubar/>
+            <div style = {styles.warrper}>
+                <h1 style = {styles.title}>編集</h1>
             用事名:<input type="text" id="name" value = {name} onChange = {nameChange}/><br/>
             開始時刻 : <input type="time" id="starttime" value = {start} onChange = {startChange}/><br/>
             終了時刻 : <input type="time" id="endtime" value = {end} onChange = {endChange}/><br/>
@@ -119,6 +132,7 @@ function Edit(){
             <button className = "registWidebutton" id = "update" onClick = {update}>{updateState}</button>
             <button className = "cancelWidebutton" id = "delete" onClick = {()=>dlt(id)}>{deleteState}</button>
           </div>
+          </>
         );
     }
   }

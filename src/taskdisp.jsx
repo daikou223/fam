@@ -2,52 +2,11 @@ import React,{useEffect,useState} from 'react';
 import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
 import styles from "./style.css"
+import Menubar from "./menubar/menubar"
+import Time,{timeSubstruct,timeAdd,StoTime} from "./class/Time"
 
 //メインページ
 function TaskMenu(){
-  //時間をつかさどるためのクラス定義
-    class Time{
-        constructor(hour,minute,second){
-          hour = Number(hour)
-          minute = Number(minute)
-          second = Number(second)
-          minute += Math.floor(second/60)
-          second = second%60;
-          hour += Math.floor(minute/60)
-          minute = minute%60
-          this.hour = Number(hour);
-          this.minute = minute;
-          this.second = second
-        };
-        toSeconds() {
-            return Number(this.hour) * 3600 + Number(this.minute) * 60 + Number(this.second);
-        }
-        disp(){
-            return `${String(this.hour).padStart(2,'0')}:${String(this.minute).padStart(2,'0')}`
-        }
-    }
-    //時間の引き算を定義
-    function timeSubstruct(ourTime,otherTime){
-        if(ourTime.toSeconds() === (new Time(0,0,0)).toSeconds()){
-          return ourTime;
-        }
-        let diffsec = (ourTime.toSeconds()-otherTime.toSeconds())%(24*60*60);
-        const hour = Math.floor( diffsec/ 3600);
-        const minute = Math.floor((diffsec % 3600) / 60);
-        const second = diffsec % 60;
-        return new Time(hour,minute,second)
-    }
-    //時間の足し算を定義
-    function timeAdd(ourTime,otherTime){
-        if(ourTime.toSeconds() === (new Time(23,59,59)).toSeconds() || ourTime.toSeconds() === (new Time(23,59,0)).toSeconds()){
-            return ourTime;
-        }
-        const diffsec = (ourTime.toSeconds()+otherTime.toSeconds())%84600;
-        const hour = Math.floor( diffsec/ 3600);
-        const minute = Math.floor((diffsec % 3600) / 60);
-        const second = diffsec % 60;
-        return new Time(hour,minute,second)
-    }
     //昨日の予定を確認するため
     function prev(){
       setTasks([[],[],[],[]]);
@@ -130,13 +89,7 @@ function TaskMenu(){
         task.gototime = new Time(...task.forgoto.split(":"));
         //user_idが1,2,3,4のもののみ
         if(task.user_id >=1 && task.user_id <= 4){
-        /*//すでにあるタスクと時間順にしたいがために導入(sortにした方がいい)
-        for(let i = 0;i<personTask[task.user_id-1].length;i++){
-          if(personTask[task.user_id-1][i].start<task.start){
-            p += 1;
-          }
-        }*/
-        personTask[task.user_id-1].push(task);
+          personTask[task.user_id-1].push(task);
       }
       for(let i=0;i<4;i++){
         personTask[0].sort((task1,task2)=>task1.starttime.toSeconds()-task2.starttime.toSeconds())
@@ -174,6 +127,7 @@ function TaskMenu(){
       }
       return(
           <div translate="no">
+            <Menubar/>
           <div className = "center">
             <button onClick = {()=>prev()} className = "midiambutton">&lt;</button><a class = "midiamletter">{date.getMonth()+1}月{date.getDate()}日({dayToString[date.getDay()]}曜日)</a> <button onClick = {()=>next()} className = "midiambutton">&gt;</button>
             </div>
@@ -188,7 +142,6 @@ function TaskMenu(){
               ))}
           </div>
           ))}
-          <MainMenu/>
           <p className = {cousionClass}> { cousion }</p>
           </div></div>)
         }}
