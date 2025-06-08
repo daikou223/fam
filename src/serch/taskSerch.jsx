@@ -1,5 +1,6 @@
 import { useState,useEffect,useRef} from "react";
 import dayjs from 'dayjs';
+import Menubar from "../menubar/menubar"
 
 function Serch(){
     //変数定義**********************
@@ -26,7 +27,9 @@ function Serch(){
     }
     return(
         <div>
-        <h1>タスク検索</h1>
+            <Menubar/>
+        <h1 style = {styles.mainTitle}>タスク検索</h1>
+        <div style = {styles.serchBar}>
         <input 
             type = "text" 
             ref = {taskName} 
@@ -36,6 +39,7 @@ function Serch(){
             onClick = {()=>serchTask()}>
             検索
             </button>
+        </div>
         <div style = {styles.serResult}>
             <div>検索結果：{filterdData.length}件</div>
         {filterdData.map((task)=>{
@@ -60,6 +64,13 @@ const styles = {
     },
     title:{
         fontSize:"10px",
+    },
+    mainTitle:{
+        marginLeft:70,
+        marginTop:30,
+    },
+    serchBar:{
+        margin:10
     }
 }
 

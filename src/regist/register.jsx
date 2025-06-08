@@ -4,6 +4,7 @@ import reportWebVitals from '../reportWebVitals';
 import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
 import styles from "./../style.css"
+import Menubar from "../menubar/menubar"
 
 //新規予定を登録するようのページ
 function Regist(){
@@ -177,6 +178,8 @@ function Regist(){
       return(<p>読み込み中...</p>)
     }
       return(
+        <>
+        <Menubar/>
         <div class="naka">
           <div className = "multiple">複数日付登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>changeBulk()} className="ookiku"/></div>
           <div className = "atHome">在宅:<input type = "checkbox" checked = {isHome} onChange = {()=>changeHome()} className="ookiku"/></div>
@@ -200,6 +203,7 @@ function Regist(){
           <button className = "registWidebutton" onClick = {()=>taskRegist()} id = "regist">{registState}</button>
           <button className = "cancelWidebutton" onClick = {()=>back()}>キャンセル</button>
         </div>
+        </>
       )
     }
 

@@ -7,10 +7,10 @@
 ul{
     list-style: none;
 }
-table{
+/* table{
     margin:10px;
     border:1px solid black
-}
+} */
 .goto{
     margin-left:20px;
     font-size:20px;
@@ -124,17 +124,17 @@ table{
 .nbsp{
     height:15px;
 }
-.weekTable tr:nth-of-type(odd){
+/* .weekTable tr:nth-of-type(odd){
     border:1px dotted black;
     background-color:rgb(212, 226, 231);
-}
-.weekTable{
+} */
+/* .weekTable{
     border-collapse:collapse ;
     text-align:center;
-}
-.weekTable tr th{
+} */
+/* .weekTable tr th{
     width:100px;
-}
+} */
 .non-color-border{
     border: 1px solid black;
     border-radius:20px;

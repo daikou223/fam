@@ -17,17 +17,18 @@ export default function Menubar(){
     const menuTable = [
         new menuItem("今日の予定","/infom"),
         new menuItem("予定登録","/register"),
-        new menuItem("帰宅時間確認","/week"),
-        new menuItem("週間予定確認","/div"),
+        new menuItem("週間予定","/week"),
+        new menuItem("タスク検索","/serch"),
     ]
     //スタイル
     const styles = {
         menuButton:{
-            height:40,
+            height:35,
             position: "fixed", // ← 画面に固定
             top: 20,           // ← 上からの距離
             left: 20,         // ← 右からの距離
             zIndex: 1000,      // ← 前面に表示
+            marginBottom:5,
         },
         menuTable:{
             position: "fixed", 
@@ -40,6 +41,17 @@ export default function Menubar(){
             margin:12,
             borderBottom:"1px solid gray",
             fontsize:"large"
+        },
+        upline:{
+            height:6,
+            borderTop:"2px solid black",
+            width:25,
+        },
+        uplineDash:{
+            height:6,
+            borderTop:"2px solid black",
+            width:25,
+            marginTop:3,
         }
     }
     //関数定義************************************
@@ -54,7 +66,11 @@ export default function Menubar(){
     <div>
         {!menuIsOpen ? 
         (
-            <button style = {styles.menuButton} onClick = {()=>menuOpen()}>menu<br/>&gt;</button>
+            <button style = {styles.menuButton} onClick = {()=>menuOpen()}>
+                <div style = {styles.uplineDash}></div>
+                <div style = {styles.upline}></div>
+                <div style = {styles.upline}></div>
+            </button>
         )
         :(
         <div style = {styles.menuTable}>
