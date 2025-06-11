@@ -110,18 +110,19 @@ function TaskMenu(){
                       [new Time(24,0,0),new Time(-1,0,0)],
                       [new Time(24,0,0),new Time(-1,0,0)],
                       [new Time(24,0,0),new Time(-1,0,0)]];
-      console.log(tasks)
+      //それぞれの人に対して
       for(let i = 0;i<4;i++){
+        //全てのタスクにおいて
         for(let j = 0;j<tasks[i].length;j++){
+          //在宅タスクではない場合、出発時間を更新
           if(tasks[i][j].isHome == 1){
             hometime[i][0] = new Time(0,0,Math.min(hometime[i][0].toSeconds(),Math.max(timeSubstruct(tasks[i][j].starttime,tasks[i][j].gototime).toSeconds(),0)));
-            break
           }
         }
+
         for(let j = tasks[i].length-1;j>=0;j--){
           if(tasks[i][j].isHome == 1){
             hometime[i][1] = new Time(0,0,Math.max(hometime[i][1].toSeconds(),Math.min(timeAdd(tasks[i][j].endtime,tasks[i][j].gototime).toSeconds(),MAXTIME)));
-            break
           }
         }
       }

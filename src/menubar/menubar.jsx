@@ -19,6 +19,7 @@ export default function Menubar(){
         new menuItem("予定登録","/register"),
         new menuItem("週間予定","/week"),
         new menuItem("タスク検索","/serch"),
+        new menuItem("印刷用メニュー","/div"),
     ]
     //スタイル
     const styles = {
@@ -29,6 +30,7 @@ export default function Menubar(){
             left: 20,         // ← 右からの距離
             zIndex: 1000,      // ← 前面に表示
             marginBottom:5,
+            removeAfterPrint: true,
         },
         menuTable:{
             position: "fixed", 
@@ -53,6 +55,7 @@ export default function Menubar(){
             width:25,
             marginTop:3,
         }
+
     }
     //関数定義************************************
     const menuOpen = ()=>{
