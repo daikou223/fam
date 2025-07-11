@@ -35,10 +35,10 @@ export function timeAdd(ourTime,otherTime){
     if(ourTime.toSeconds() === (new Time(23,59,59)).toSeconds() || ourTime.toSeconds() === (new Time(23,59,0)).toSeconds()){
         return new Time(23,59,59);
     }
-    const diffsec = (ourTime.toSeconds()+otherTime.toSeconds())%84600;
-    const hour = Math.floor( diffsec/ 3600);
-    const minute = Math.floor((diffsec % 3600) / 60);
-    const second = diffsec % 60;
+    const addsec = (ourTime.toSeconds()+otherTime.toSeconds());
+    const hour = Math.floor( addsec/ 3600);
+    const minute = Math.floor((addsec % 3600) / 60);
+    const second = addsec % 60;
     return new Time(hour,minute,second)
 }
 export function StoTime(TimeString){

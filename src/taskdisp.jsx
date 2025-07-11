@@ -135,7 +135,7 @@ function TaskMenu(){
             <div>
               {[0, 1, 2, 3].map((i) => (
               <div key={i} className="border">
-                  出発時刻:{hometime[i][0].toSeconds()== MAXTIME+1?<>--:--</>:<>{hometime[i][0].disp()}</>} &rarr;&nbsp;帰宅時刻:{hometime[i][1].toSeconds() < 0?<>--:--</>:<>{hometime[i][1].disp()}</>}
+                  出発時刻:{hometime[i][0].toSeconds()== MAXTIME+1?<>--:--</>:<>{hometime[i][0].disp()}</>} &rarr;&nbsp;帰宅時刻:{hometime[i][1].toSeconds() < 0 ? <>--:--</>:hometime[i][1].toSeconds() === MAXTIME ? <>23:59以降</>:<>{hometime[i][1].disp()}</>}
               {tasks[i].map((task, index) => (
               <div key={index} className = "topmargin">
                   <OnlyTask task={task} userId = {i+1} />
