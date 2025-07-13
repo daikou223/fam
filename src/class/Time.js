@@ -42,6 +42,14 @@ export function timeAdd(ourTime,otherTime){
     return new Time(hour,minute,second)
 }
 export function StoTime(TimeString){
-    const [hour,minute,second] = TimeString.split(":");
+    const timelist = TimeString.split(":");
+    const hour = timelist?.[0] ?? 0
+    const minute = timelist?.[1] ?? 0
+    const second = timelist?.[2] ?? 0
     return new Time(hour,minute,second);
+}
+export function timeCollapse(start1,end1,start2,end2){
+    const deffs1e2 = timeSubstruct(end1,start2).toSeconds() 
+    const deffs2e1 = timeSubstruct(end2,start1).toSeconds() 
+    return deffs1e2 * deffs2e1 >= 0
 }

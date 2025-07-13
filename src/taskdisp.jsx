@@ -36,6 +36,7 @@ function TaskMenu(){
     let result = "";
     let [cousion,setCousion] = useState("読み込み中のため、前回読み込んだ情報を表示しています");
     let [cousionClass,setCousionClass] = useState("cousion");
+    let [isLoading,setIsLoading] = useState(true);
     const MAXTIME = 24*3600-1
     //初期化のためのEffect
     useEffect(() => {
@@ -58,7 +59,6 @@ function TaskMenu(){
       .get(`https://fam-api-psi.vercel.app/api/tasks`)             //リクエストを飛ばすpath
       .then(response => {
           result = response.data;
-          console.log(result);
           localStorage.setItem("task",JSON.stringify(result));
           //日付ごとに分配するためのdict
           let allTask = {};
@@ -73,6 +73,7 @@ function TaskMenu(){
           })
           setAllTasks({...allTask});
           setCousion("");
+          setIsLoading(false);
           setCousionClass("");
       })                               //成功した場合、postsを更新する（then）
       .catch((error) => {
@@ -97,14 +98,12 @@ function TaskMenu(){
       })
   }
     setTasks(personTask);
-    console.log(personTask);
 },[date,allTasks])
     if (Object.keys(allTasks).length == 0 || tasks == []){
-      return(
+      return(isLoading ? 
       <div className = "center">
         <p>読み込み中...</p>
-      </div>
-        );
+      </div>:<></>);
     }else{
       let hometime = [[new Time(24,0,0),new Time(-1,0,0)],
                       [new Time(24,0,0),new Time(-1,0,0)],
@@ -128,7 +127,7 @@ function TaskMenu(){
       }
       return(
           <div translate="no">
-            <Menubar/>
+            {<Menubar isActive = {isLoading} setCousion = {setCousion}/>}
           <div className = "center">
             <button onClick = {()=>prev()} className = "midiambutton">&lt;</button><a class = "midiamletter">{date.getMonth()+1}月{date.getDate()}日({dayToString[date.getDay()]}曜日)</a> <button onClick = {()=>next()} className = "midiambutton">&gt;</button>
             </div>
@@ -138,18 +137,22 @@ function TaskMenu(){
                   出発時刻:{hometime[i][0].toSeconds()== MAXTIME+1?<>--:--</>:<>{hometime[i][0].disp()}</>} &rarr;&nbsp;帰宅時刻:{hometime[i][1].toSeconds() < 0 ? <>--:--</>:hometime[i][1].toSeconds() === MAXTIME ? <>23:59以降</>:<>{hometime[i][1].disp()}</>}
               {tasks[i].map((task, index) => (
               <div key={index} className = "topmargin">
-                  <OnlyTask task={task} userId = {i+1} />
+                  <OnlyTask task={task} userId = {i+1} isLoading = {isLoading} setCousion={setCousion} />
               </div>
               ))}
           </div>
           ))}
-          <p className = {cousionClass}> { cousion }</p>
+          <p className = {cousionClass} style = {{ whiteSpace: "pre-line" }}> { isLoading ? cousion:"" }</p>
           </div></div>)
         }}
 
-function OnlyTask({task,userId}){
+function OnlyTask({task,userId,isLoading,setCousion}){
     const navigate = useNavigate();
     function moveEdit(id,user){
+        if(isLoading){
+          setCousion("読み込み中のため、前回読み込んだ情報を表示しています\n!!!読み込み中は編集できません!!!")
+          return null
+        }
         let userId = localStorage.getItem('id');
         if(user == userId){
           navigate(`/edit/${id}`)
@@ -163,36 +166,6 @@ function OnlyTask({task,userId}){
       </div>
       </div>
     )
-}
-
-function MainMenu(){
-  const navigate = useNavigate();
-  function moveRegist(){
-    navigate(`/register`)
-  }
-  function moveWeek(){
-    navigate(`/week`)
-  }
-  function movediv(){
-    navigate(`/div`)
-  }
-  return(
-    <div>
-      <div className = "nbsp"></div>
-      <div className = "Menubutton" onClick = {()=>{moveRegist()}}>
-        予定登録
-      </div>
-      <div className = "buttons">
-      <div className = "Menubutton" onClick = {()=>{moveWeek()}}>
-        週間予定確認
-      </div>
-      <div className = "Menubutton" onClick = {()=>{movediv()}}>
-        個人日程表作成
-      </div>
-      </div>
-
-    </div>
-  )
 }
   
 export default TaskMenu;
