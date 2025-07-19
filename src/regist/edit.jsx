@@ -24,7 +24,7 @@ function Edit(){
     const [isHome,setIsHome] = useState(1);
     const [date,setDate] = useState("");
     const [sameTask,setSameTask] = useState([]);
-    const [message,setMessage] = useState("このメッセージが見えたらおかしいよ.見えたら管理者に言ってね~");
+    const [message,setMessage] = useState("このメッセージが見えたらおかしいよ.見えたらスクショして管理者に送って~");
     const [selection,setSelection] = useState(["選択１","選択2","選択３"]);
     const [modalDisp,setModalDisp] = useState(false);
     const [modalResolve, setModalResolve] = useState(null);
@@ -90,7 +90,7 @@ function Edit(){
     function memoChange(e){
         setMemo(e.target.value);
     }
-    function bulkUpdate(){
+    async function bulkUpdate(){
         setUpdate("更新中");
         const button = document.getElementById("update");
         button.disabled = true;
@@ -104,18 +104,31 @@ function Edit(){
         }
         const targetIds = sameIdFlag ? sameTaskid:[id]
         putList.current = targetIds
-        targetIds.map((targetid)=>{
-            loopcollapseTask(targetid)
-        })
+        for (const targetId of targetIds) {
+            await loopcollapseTask(targetId);
+        }
+        let p = 0
+        if(putList.current.length > 0){
+            update(putList.current)
+            p = 1
+        }
+        if(dltList.current.length > 0){
+            dltApi(dltList.current)
+            p = 1
+        }
+        //どっちもない場合は独座に戻す
+        if(p == 0){
+            navigate(`/infom`);
+        }
     }
     //各タスクに応じて、衝突タスクを探す
     async function loopcollapseTask(targetid){
         const targetDetail = getTaskDetails(targetid)
         const collapseTasks = getCollapse(targetDetail.date,StoTime(start),StoTime(end),targetDetail.user_id)
         for (const collapseId of collapseTasks) {
-            if(collapseId != id){
+            if(collapseId != targetid){
                 const collapseDetail = getTaskDetails(collapseId);
-                const result = await showModal(`「${collapseDetail.name}」と時間が重複しています`, [`「${collapseDetail.name}」を削除`,`このタスクを更新しない`,`両方保存する(非推奨)`]);
+                const result = await showModal(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, [`「${collapseDetail.name}」を削除`,`このタスクを更新しない`,`両方保存する(非推奨)`]);
                 switch(result){
                     case 0:
                         dltList.current.push(collapseId)
@@ -126,20 +139,6 @@ function Edit(){
                 }
             }
         }
-        let p = 0
-        if(putList.current.length > 0){
-            update(putList.current)
-            p = 1
-        }
-        if(dltList.current.length > 0){
-            dlt(dltList.current)
-            p = 1
-        }
-        //どっちもない場合は独座に戻す
-        if(p == 0){
-            navigate(`/infom`);
-        }
-
     }
     async function showModal(massage,option){
         setMessage(massage)
@@ -169,12 +168,26 @@ function Edit(){
             }
         )
     }
-    function dlt(ids){
+    function dlt(id){
         setDelete("削除中");
         const button = document.getElementById("update");
         button.disabled = true;
         const Dbutton = document.getElementById("delete");
         Dbutton.disabled = true;
+        const sameTaskid = getSameTask(getTaskDetails(id).name,getTaskDetails(id).date)
+        //今削除しようとしているものも含まれる
+        let sameIdFlag = false
+        if(sameTaskid.length >= 2){
+            sameIdFlag = window.confirm("今後同名のタスクが存在しますが、同様に削除しますか？")
+        }
+        if(sameIdFlag){
+            dltApi(sameTaskid)
+        }
+        else{
+            dltApi([id])
+        }
+    }
+    function dltApi(ids){
         axios.delete(
             `https://fam-api-psi.vercel.app/api/tasks/${ids.join(",")}`
         ).then(
