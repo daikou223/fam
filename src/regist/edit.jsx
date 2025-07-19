@@ -9,6 +9,7 @@ import TaskList,{getSameTask, getCollapse, getTaskDetails} from "./../class/Task
 import dayjs from 'dayjs';
 import Modal from "./../modal/modal"
 import Time,{StoTime} from "./../class/Time"
+import {update,dltApi} from "./../api/TaskApi"
 
 function Edit(){
     //変数************************************
@@ -100,7 +101,7 @@ function Edit(){
         //今更新しようとしているものも含まれる
         let sameIdFlag = false
         if(sameTaskid.length >= 2){
-            sameIdFlag = window.confirm("今後同名のタスクが存在しますが、同様に更新しますか？")
+            sameIdFlag = await showModal("今後同名のタスクが存在しますが、同様に更新しますか？",["はい","更新しない"])
         }
         const targetIds = sameIdFlag ? sameTaskid:[id]
         putList.current = targetIds
@@ -137,6 +138,9 @@ function Edit(){
                         putList.current = putList.current.filter((pId)=>pId != targetid)
                         break
                 }
+                if(result == 1){
+                    break
+                }
             }
         }
     }
@@ -149,26 +153,8 @@ function Edit(){
             setModalResolve(() => resolve);
         });
     }
-    function update(ids){
-        axios.put(
-            'https://fam-api-psi.vercel.app/api/tasks',
-            {
-                taskname:name,
-                forgoto:goto,
-                start:start,
-                end:end,
-                memo:memo,
-                taskids:ids,
-                isHome:isHome
-            }
-        ).then(
-            response=>{
-                console.log('post成功');
-                navigate(`/infom`);
-            }
-        )
-    }
-    function dlt(id){
+    
+    async function dlt(id){
         setDelete("削除中");
         const button = document.getElementById("update");
         button.disabled = true;
@@ -178,24 +164,15 @@ function Edit(){
         //今削除しようとしているものも含まれる
         let sameIdFlag = false
         if(sameTaskid.length >= 2){
-            sameIdFlag = window.confirm("今後同名のタスクが存在しますが、同様に削除しますか？")
+            sameIdFlag = await showModal("今後同名のタスクが存在しますが、同様に削除しますか？",["削除する","しない"])
         }
-        if(sameIdFlag){
-            dltApi(sameTaskid)
+        if(sameIdFlag == 0){
+            await dltApi(sameTaskid)
+            navigate("/infom")
         }
         else{
             dltApi([id])
         }
-    }
-    function dltApi(ids){
-        axios.delete(
-            `https://fam-api-psi.vercel.app/api/tasks/${ids.join(",")}`
-        ).then(
-            response=>{
-                console.log('delete成功');
-                navigate(`/infom`);
-            }
-        )
     }
     //リターン文******************************************
     if(!task || !task.task_id){

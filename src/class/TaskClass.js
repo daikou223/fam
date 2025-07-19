@@ -72,7 +72,8 @@ export function getCollapse(date,start,end,user_id){
     const fullTask = new TaskList(JSON.parse(localStorage.getItem("task")))
     let CollapseTask_ = []
     fullTask.tasks.map((atask)=>{
-        if(atask.date.isSame(date,"day") && atask.user_id === user_id){
+        console.log(atask.name,atask.date.isSame(date,"day"), atask.user_id,user_id)
+        if(atask.date.isSame(date,"day") && atask.user_id == user_id){
             const isCollapse = timeCollapse(atask.start,atask.end,start,end)
             if(isCollapse){
                 CollapseTask_.push(atask.id)
