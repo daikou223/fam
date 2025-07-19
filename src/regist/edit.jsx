@@ -110,7 +110,7 @@ function Edit(){
         }
         let p = 0
         if(putList.current.length > 0){
-            update(name,goto,StoTime(start).disp(),StoTIme(end).disp(),memo,putList.current,isHome)
+            update(name,goto,StoTime(start).disp(),StoTime(end).disp(),memo,putList.current,isHome)
             p = 1
         }
         if(dltList.current.length > 0){
