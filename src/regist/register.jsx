@@ -5,6 +5,10 @@ import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
 import styles from "./../style.css"
 import Menubar from "../menubar/menubar"
+import Modal from "./../modal/modal"
+import TaskList,{getSameTask, getCollapse, getTaskDetails} from "./../class/TaskClass"
+import {update,dltApi} from "./../api/TaskApi"
+import Time,{StoTime} from "./../class/Time"
 
 //新規予定を登録するようのページ
 function Regist(){
@@ -18,6 +22,10 @@ function Regist(){
     const [oziStartDate,setOziStartDate] = useState(null);
     const [views,setViews] = useState([]);
     const [bulkDates,setBulkDates] = useState([]);
+    const [message,setMessage] = useState("このメッセージが見えたらおかしいよ.見えたらスクショして管理者に送って~");
+    const [selection,setSelection] = useState(["選択１","選択2","選択３"]);
+    const [modalDisp,setModalDisp] = useState(false);
+    const [modalResolve, setModalResolve] = useState(null);
     const navigate = useNavigate();
     const id = localStorage.getItem('id');
     //日付を扱う
@@ -42,6 +50,16 @@ function Regist(){
       } else {
           return year1 < year2;
       }
+    }
+
+    async function showModal(massage,option){
+        setMessage(massage)
+        setSelection(option)
+        setModalDisp(true)
+        
+        return new Promise((resolve) => {
+            setModalResolve(() => resolve);
+        });
     }
     //画面レンダリング系
     useEffect(()=>{
@@ -70,10 +88,10 @@ function Regist(){
       });  
     },[])
     //登録時に実行する関数
-    function taskRegist(){
-      let flag = true;
+    async function taskRegist(){
+      let flag = 0;
       if(date <= new Date() && !(isBulk)){
-        flag = window.confirm('日付が本日かそれ以前ですが\nよろしいですか？');
+        flag = await showModal('日付が本日かそれ以前ですが\nよろしいですか？',["はい","キャンセル"]);
       } 
       if(isBulk){
         let p = false;
@@ -83,10 +101,11 @@ function Regist(){
           }
         }
         if(p){
-          flag = window.confirm('日付が本日かそれ以前が含まれていますが\nよろしいですか？');
+          flag = await showModal('日付が本日かそれ以前が含まれていますが\nよろしいですか？',["はい","キャンセル"]);
         }
       } 
-      if(flag){
+      console.log(flag)
+      if(flag == 0){
       setRegistState("登録中");
       const button = document.getElementById("regist");
       button.disabled = true;
@@ -102,40 +121,65 @@ function Regist(){
       if(!(isHome)){
         home = 1
       }
-      console.log(id,date,name,start,end,gototime,memo,home);
-      if(!(isBulk)){
-        axios.post(
-          'https://fam-api-psi.vercel.app/api/tasks',
-          {userid:id,
-            taskname:name,
-            forgoto:gototime+":00",
-            date:date.getFullYear()+"-"+Number(date.getMonth()+1)+"-"+date.getDate(),
-            start:start+":00",
-            end:end+":00",
-            memo:memo,
-            isHome:home
+      const collapseTasks = getCollapse(date,StoTime(start),StoTime(end),id)
+      console.log(date,StoTime(start),StoTime(end),id,collapseTasks)
+      let dltList = []
+      let postfrag = true
+      for (const collapseId of collapseTasks) {
+        const collapseDetail = getTaskDetails(collapseId);
+        const result = await showModal(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, [`「${collapseDetail.name}」を削除`,`このタスクを登録しない`,`両方保存する(非推奨)`]);
+        switch(result){
+            case 0:
+                dltList.push(collapseId)
+                postfrag = true
+                break
+            case 1:
+              postfrag = false
+              break
         }
-        ).then(()=>{
-        navigate(`/infom`)
+        //あきらめるならこれ以上聞いても意味ない
+        if(result == 1){
+          break
         }
-        );
-      }else{
-        let paramses = [];
-        for(let i = 0;i<bulkDates.length;i++){
-          paramses.push([id,name,gototime+":00",bulkDates[i],start+":00",end+":00",memo,home]);  
+      }
+      if(postfrag){
+        if(!(isBulk)){
+          axios.post(
+            'https://fam-api-psi.vercel.app/api/tasks',
+            {userid:id,
+              taskname:name,
+              forgoto:gototime+":00",
+              date:date.getFullYear()+"-"+Number(date.getMonth()+1)+"-"+date.getDate(),
+              start:start+":00",
+              end:end+":00",
+              memo:memo,
+              isHome:home
+          }
+          )
+          if(dltList.length > 0){
+            dltApi(dltList)
+          }
+          back()
+        }else{
+          let paramses = [];
+          for(let i = 0;i<bulkDates.length;i++){
+            paramses.push([id,name,gototime+":00",bulkDates[i],start+":00",end+":00",memo,home]);  
+          }
+          axios.post(`https://fam-api-psi.vercel.app/api/month`,{
+            values:paramses
+              }).then(()=>{
+                  console.log("成功");
+                  navigate(`/infom`);
+              }
+              ).catch((err)=>
+                  {
+                    alert('予期してないというと\n嘘になるエラーが発生しました\n開発者に問い合わせて下さい')
+                  }
+              );
+          }
         }
-        axios.post(`https://fam-api-psi.vercel.app/api/month`,{
-          values:paramses
-            }).then(()=>{
-                console.log("成功");
-                navigate(`/infom`);
-            }
-            ).catch((err)=>
-                {
-                  console.log("error",err);
-                  alert('予期してないというと\n嘘になるエラーが発生しました\n開発者に問い合わせて下さい')
-                }
-            );
+        else{
+          back()
         }
       }
     }
@@ -180,6 +224,17 @@ function Regist(){
       return(
         <>
         <Menubar/>
+        <Modal 
+          message = {message} 
+          selection = {selection} 
+          modalDisp = {modalDisp}
+          onSelect={(idx) => {
+              if (modalResolve) {
+                  modalResolve(idx); // ユーザーの選択結果を返す
+                  setModalDisp(false); // モーダルを閉じる
+              }
+            }}
+        />
         <div class="naka">
           <div className = "multiple">複数日付登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>changeBulk()} className="ookiku"/></div>
           <div className = "atHome">在宅:<input type = "checkbox" checked = {isHome} onChange = {()=>changeHome()} className="ookiku"/></div>
