@@ -160,7 +160,8 @@ function Edit(){
         button.disabled = true;
         const Dbutton = document.getElementById("delete");
         Dbutton.disabled = true;
-        const sameTaskid = getSameTask(getTaskDetails(id).name,getTaskDetails(id).date)
+        const taskDetail = await getTaskDetails(id)
+        const sameTaskid = await getSameTask(taskDetail.name,taskDetail.date)
         //今削除しようとしているものも含まれる
         let sameIdFlag = false
         if(sameTaskid.length >= 2){
@@ -168,11 +169,11 @@ function Edit(){
         }
         if(sameIdFlag == 0){
             await dltApi(sameTaskid)
-            navigate("/infom")
         }
         else{
-            dltApi([id])
+            await dltApi([id])
         }
+        navigate("/infom")
     }
     //リターン文******************************************
     if(!task || !task.task_id){

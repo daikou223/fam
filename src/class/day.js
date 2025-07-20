@@ -59,19 +59,31 @@ function getDDDay(date){
     return days[date.format("d")]
 }
 
+function getFirstday(date){
+    const year = Number(date.format("YYYY"))
+    const month = Number(date.format("MM"))
+    return dayjs(new Date(year,month-1,1))
+}
+
+function getFinalday(date){
+    const year = Number(date.format("YYYY"))
+    const month = Number(date.format("MM"))
+    return dayjs(new Date(year,month,0))
+}
+
+function setDate(year,month,day){
+    return dayjs(new Date(year,month,day))
+}
+
+function dateIncludes(dates,targetDate){
+    return dates.some(date => date.isSame(targetDate, 'day'))
+}
 function testFunc(){
-    const testDate = stringToDate("2025-10-16T14:08:00Z")
-    console.log(testDate)
-    console.log(getTomorrow(testDate))
-    console.log(getYestaday(testDate))
-    console.log(getToday())
-    console.log(dateToString(testDate))
-    console.log(dateDisplay(testDate))
-    console.log(dateFullDisplay(testDate))
-    console.log(getDay(testDate))
-    console.log(getDay(getToday()))
-    console.log(getDDDay(getToday()))
+    console.log(dateFullDisplay(getFirstday(2003,10)))
+    console.log(dateFullDisplay(getFinalday(2003,10)))
 }
 
 //testFunc()
-export {getYestaday,getTomorrow,getToday,stringToDate,dateToString,dateDisplay,dateFullDisplay,getDay,getDDDay}
+export {getYestaday,getTomorrow,getToday,stringToDate,dateToString,dateDisplay,dateFullDisplay,getDay,getDDDay
+    ,getFirstday,getFinalday,setDate,dateIncludes
+}

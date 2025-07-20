@@ -56,7 +56,7 @@ function TaskMenu(){
     }
     for(let i = 0; i < 4; i++){
       //表示を早い順に
-      parsonTask[i].sort((task1,task2)=>task1.starttime.toSeconds()-task2.starttime.toSeconds())
+      parsonTask[i].sort((task1,task2)=>task1.start.toSeconds()-task2.start.toSeconds())
       let goOutTime =  new Time(24,0,0).toSeconds()-1
       let goHomeTime = 0
       //帰宅時間を計算
@@ -103,8 +103,8 @@ function TaskMenu(){
 
 function OnlyTask({task,isLoading,setCousion}){
   const navigate = useNavigate();
-  function moveEdit(taskid){
-    const targetTask = taskUtil.getTaskDetails(taskid)
+  async function moveEdit(taskid){
+    const targetTask = await taskUtil.getTaskDetails(taskid)
     let userId = localStorage.getItem('id');
     if(targetTask.user_id == userId){
       if(isLoading){
@@ -117,7 +117,7 @@ function OnlyTask({task,isLoading,setCousion}){
   }
   return(
     <div>
-    <div className = "teskName" onClick = {()=>moveEdit(task.task_id)}><b>{task.name}</b></div>
+    <div className = "teskName" onClick = {()=>moveEdit(task.id)}><b>{task.name}</b></div>
     <div className = "taskcont">
       <div className= "orange">開始時間<br/><a className = "Lmargin">{task.start.disp()}</a></div><div className= "orange"> 終了時間<br/><a className = "Lmargin">{task.end.disp()}</a></div><div className = "Lmargin-memo">{task.memo}</div>
     </div>

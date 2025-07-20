@@ -5,10 +5,7 @@ import * as dayUtil from "./day"
 
 async function initialized() {
     const tasksList = await ApiUtil.getTask();
-    if(tasksList){
-        return formater(tasksList)
-    }
-    return null
+    return formater(tasksList)
 }
 
 export function formater(Data){
@@ -75,8 +72,8 @@ class task{
 }
 /* date:"2025-03-06T00:00:00.000Z"end:"23:59:00"forgoto:"01:15:00"isHome:1
 memo:""start:"20:30:00"task_id:811taskname:"夜勤仕事"user_id:2 */
-export function getSameTask(name,date){
-    const fullTask = initialized()
+export async function getSameTask(name,date){
+    const fullTask = await initialized()
     const SameTask_ = []
     fullTask.tasks.map((task)=>{
         if(task.name === name && date <= task.date){
@@ -86,8 +83,8 @@ export function getSameTask(name,date){
     return SameTask_
 }
 
-export function getCollapse(date,start,end,user_id){
-    const fullTask = initialized()
+export async function getCollapse(date,start,end,user_id){
+    const fullTask = await initialized()
     let CollapseTask_ = []
     fullTask.tasks.map((atask)=>{
         if(atask.date.isSame(date,"day") && atask.user_id == user_id){
@@ -100,13 +97,13 @@ export function getCollapse(date,start,end,user_id){
     return CollapseTask_
 }
 
-export function getTaskDetails(id){
-    const fullTask = initialized()
+export async function getTaskDetails(id){
+    const fullTask =await initialized()
     return fullTask.idToTask[id]
 }
 
-export function getTaskOnlyId(){
-    const FullTask = initialized()
+export async function getTaskOnlyId(){
+    const FullTask = await initialized()
     return FullTask.tasksOnlyId
 }
 
