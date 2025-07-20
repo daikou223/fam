@@ -1,4 +1,4 @@
-import React,{useEffect,useState} from 'react';
+import React,{useEffect,useState,useRef} from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import axios from "axios";
@@ -37,8 +37,8 @@ function Login(){
   //ナビゲートの作成
   const navigate = useNavigate();
   //user=>userIdの保存 pass=>パスワードの保存 couthin=>エラー文の保存
-  const [user,setUser] = useState(0);
-  const [pass,setPass] = useState("");
+  const userRef = useRef(0);
+  const passRef = useRef("");
   const [couthin,setCouthin] = useState("");
   
   //localStorageにidが保存されているなら，自動ログイン
@@ -48,10 +48,6 @@ function Login(){
       
       // 数値として1〜4の範囲かを確認
       if (storedId && Number(storedId) >= 1 && Number(storedId) <= 4) {
-        console.log(storedId);
-        setUser(storedId);
-        setCouthin("");
-
         // 自動ログイン後に遷移
         navigate(`/infom`);
       }
@@ -64,19 +60,16 @@ function Login(){
       { headers: { 'Content-Type': 'application/json' } }
     )
     .then(response => {
-      console.log(response);
       if(response.data == true){
         //passが一致した時ローカルストレージに保存し，画面遷移
-        setUser(localStorage.getItem('id'));
-        navigate(`/infom`);
-        setCouthin("")
         localStorage.setItem('id',user)
+        navigate(`/infom`);
       }
       else{
         //passが一致しなかった場合エラーを送出
         setCouthin("passが違います")
       }
-      console.log('POST成功:', response.data);
+      return response.data;
     })
     .catch(error => {
       //idが存在しない場合はエラーが起きるので，その旨を報告
@@ -94,9 +87,9 @@ function Login(){
     <div>
       <p id = "couthin">{couthin}</p>
       <form>
-      <p>ID:<input name = "id" value = {user} onChange = {(e)=> setUser(e.target.value)}></input></p>
-      <p>Pass:<input name = "pass" value = {pass} onChange = {(e)=> setPass(e.target.value)}></input></p>
-      <p><button type = "button" onClick ={() => link(user,pass)}>ログイン</button></p>
+      <p>ID:<input name = "id" ref = {userRef}></input></p>
+      <p>Pass:<input name = "pass" ref = {passRef}></input></p>
+      <p><button type = "button" onClick ={() => link(userRef.current.value,passRef.current.value)}>ログイン</button></p>
     </form>
     </div>
   )

@@ -1,4 +1,5 @@
 import axios from "axios";
+import dayjs from "dayjs";
 //タスクのアップデート
 export function update(name,goto,start,end,memo,ids,isHome){
     axios.put(
@@ -29,4 +30,20 @@ export function dltApi(ids){
             return response
         }
     )
+}
+//タスクの取得
+export async function getTask(){
+    if(localStorage.getItem("task") && localStorage.getItem("date") && dayjs(localStorage.getItem("date")).diff(dayjs(),"hour",true) > -1){
+        let result = JSON.parse(localStorage.getItem("task"));
+        localStorage.setItem("date",dayjs().toISOString())
+        return result
+    }
+    const response = await axios
+      .get(`https://fam-api-psi.vercel.app/api/tasks`)             //リクエストを飛ばすpath
+      .catch((error) => {
+        throw new Error('タスク取得エラー',error);
+    });  
+    localStorage.setItem("date",dayjs().toISOString())
+    localStorage.setItem("task",JSON.stringify(response.data))
+    return response.data
 }

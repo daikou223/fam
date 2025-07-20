@@ -1,14 +1,21 @@
-import Time,{timeSubstruct,timeAdd,StoTime,timeCollapse} from "./Time"
+import * as TimeUtil from "./Time"
 import dayjs from 'dayjs';
+import * as ApiUtil from "./../api/TaskApi"
+import * as dayUtil from "./day"
 
-export default class TaskList{
-    tasks
-    idToTask
-    constructor(tasksList){
-        this.tasks = []
-        this.idToTask = {}
-        tasksList.map((atask)=>{
-            this.tasks.push(new task(
+async function initialized() {
+    const tasksList = await ApiUtil.getTask();
+    if(tasksList){
+        return formater(tasksList)
+    }
+    return null
+}
+
+export function formater(Data){
+    const FullTask = new TaskList()
+    Data.map((atask)=>{
+            FullTask.tasksOnlyId.push(atask.task_id)
+            FullTask.tasks.push(new task(
                 atask.date,
                 atask.end,
                 atask.forgoto,
@@ -19,7 +26,7 @@ export default class TaskList{
                 atask.user_id,
                 atask.taskname
             ))
-            this.idToTask[atask.task_id] = new task(
+            FullTask.idToTask[atask.task_id] = new task(
                 atask.date,
                 atask.end,
                 atask.forgoto,
@@ -31,6 +38,17 @@ export default class TaskList{
                 atask.taskname
             )
         })
+    return FullTask
+}
+
+export default class TaskList{
+    tasksOnlyId
+    tasks
+    idToTask
+    constructor(){
+        this.tasksOnlyId = []
+        this.tasks = []
+        this.idToTask = {}
     }
 }
 class task{
@@ -44,12 +62,12 @@ class task{
     user_id
     name
     constructor(date,end,forgoto,isHome,memo,start,id,user_id,name){
-        this.date = dayjs(date.split("T")[0])
-        this.end = StoTime(end)
-        this.forgoto = StoTime(forgoto)
+        this.date = dayUtil.stringToDate(date)
+        this.end = TimeUtil.StoTime(end)
+        this.forgoto = TimeUtil.StoTime(forgoto)
         this.isHome = isHome
         this.memo = memo
-        this.start = StoTime(start)
+        this.start = TimeUtil.StoTime(start)
         this.id = id
         this.user_id = user_id
         this.name = name
@@ -58,7 +76,7 @@ class task{
 /* date:"2025-03-06T00:00:00.000Z"end:"23:59:00"forgoto:"01:15:00"isHome:1
 memo:""start:"20:30:00"task_id:811taskname:"夜勤仕事"user_id:2 */
 export function getSameTask(name,date){
-    const fullTask = new TaskList(JSON.parse(localStorage.getItem("task")))
+    const fullTask = initialized()
     const SameTask_ = []
     fullTask.tasks.map((task)=>{
         if(task.name === name && date <= task.date){
@@ -69,12 +87,11 @@ export function getSameTask(name,date){
 }
 
 export function getCollapse(date,start,end,user_id){
-    const fullTask = new TaskList(JSON.parse(localStorage.getItem("task")))
+    const fullTask = initialized()
     let CollapseTask_ = []
     fullTask.tasks.map((atask)=>{
-        console.log(atask.name,atask.date.isSame(date,"day"), atask.user_id,user_id)
         if(atask.date.isSame(date,"day") && atask.user_id == user_id){
-            const isCollapse = timeCollapse(atask.start,atask.end,start,end)
+            const isCollapse = TimeUtil.timeCollapse(atask.start,atask.end,start,end)
             if(isCollapse){
                 CollapseTask_.push(atask.id)
             }
@@ -84,6 +101,16 @@ export function getCollapse(date,start,end,user_id){
 }
 
 export function getTaskDetails(id){
-    const fullTask = new TaskList(JSON.parse(localStorage.getItem("task")))
+    const fullTask = initialized()
     return fullTask.idToTask[id]
+}
+
+export function getTaskOnlyId(){
+    const FullTask = initialized()
+    return FullTask.tasksOnlyId
+}
+
+export async function getTask(){
+    const FullTask = await initialized()
+    return FullTask?.tasks
 }

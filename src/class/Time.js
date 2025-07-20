@@ -53,3 +53,10 @@ export function timeCollapse(start1,end1,start2,end2){
     const deffs2e1 = timeSubstruct(end2,start1).toSeconds() 
     return deffs1e2 * deffs2e1 >= 0
 }
+
+export function secondToTime(second){
+    const hour = Math.floor(second/3600)
+    const minute = Math.floor(second%3600/60)
+    const seconds = second%60
+    return new Time(hour,minute,seconds)
+}
