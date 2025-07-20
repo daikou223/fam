@@ -1,26 +1,24 @@
-import React,{useEffect,useState} from 'react';
+import React,{useEffect,useState,useRef} from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from '../reportWebVitals';
 import axios from "axios";
-import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import styles from "./../style.css"
 import Menubar from "../menubar/menubar"
 import Modal from "./../modal/modal"
 import TaskList,{getSameTask, getCollapse, getTaskDetails} from "./../class/TaskClass"
-import {update,dltApi} from "./../api/TaskApi"
+import {update,dltApi,postTask} from "./../api/TaskApi"
 import Time,{StoTime} from "./../class/Time"
+import * as dateUtil from "./../class/day"
+import dayjs from "dayjs"
 
 //新規予定を登録するようのページ
 function Regist(){
     //変数
     const [registState,setRegistState] = useState("登録");
-    const [date,setDate] = useState(new Date());
-    const [dateLabel,setDateLabel] = useState("日付");
+    const [date,setDate] = useState(dateUtil.getToday());
     const [isBulk,setBulk] = useState(false);
     const [isHome,setIsHome] = useState(false);
-    const [endDate,setEndDate] = useState("");
-    const [oziStartDate,setOziStartDate] = useState(null);
-    const [views,setViews] = useState([]);
     const [bulkDates,setBulkDates] = useState([]);
     const [message,setMessage] = useState("このメッセージが見えたらおかしいよ.見えたらスクショして管理者に送って~");
     const [selection,setSelection] = useState(["選択１","選択2","選択３"]);
@@ -28,30 +26,13 @@ function Regist(){
     const [modalResolve, setModalResolve] = useState(null);
     const navigate = useNavigate();
     const id = localStorage.getItem('id');
-    //日付を扱う
-    function toDate(dateString){
-      const seprate = dateString.split(/[T-]/);
-      return new Date(Number(seprate[0]),Number(seprate[1])-1,Number(seprate[2]));
-    }
-    function isBigDate(date1,date2){
-      var year1 = date1.getFullYear();
-      var month1 = date1.getMonth() + 1;
-      var day1 = date1.getDate();
-      var year2 = date2.getFullYear();
-      var month2= date2.getMonth() + 1;
-      var day2 = date2.getDate();
-      if (year1 == year2) {
-          if (month1 == month2) {
-              return day1 < day2;
-          }
-          else {
-              return month1 < month2;
-          }
-      } else {
-          return year1 < year2;
-      }
-    }
+    const taskNameRef = useRef("");
+    const taskStartRef = useRef("");
+    const taskEndRef = useRef("");
+    const taskGotoRef = useRef("");
+    const taskMemoRef = useRef("");
 
+  
     async function showModal(massage,option){
         setMessage(massage)
         setSelection(option)
@@ -61,72 +42,37 @@ function Regist(){
             setModalResolve(() => resolve);
         });
     }
-    //画面レンダリング系
-    useEffect(()=>{
-      document.getElementById("name").value = "";
-      document.getElementById("starttime").value = "00:00";
-      document.getElementById("endtime").value = "23:59";
-      document.getElementById("gototime").value = "00:00";
-      document.getElementById("memo").value = "";
-      axios
-      .get(`https://fam-api-psi.vercel.app/api/tasks`)             //リクエストを飛ばすpath
-      .then(response => {
-        let allTasks = response.data;
-        //日付ごとに分配するためのdict
-        let oziDate = new Date();
-        allTasks.map((task)=>{
-         if(task.userid == 4){
-          if(isBigDate(oziDate,toDate(task.date))){
-            oziDate = toDate(task.date);
-          }
-        }
-        })
-        setOziStartDate(oziDate);
-      })                               //成功した場合、postsを更新する（then）
-      .catch((error) => {
-          console.log('通信に失敗しました',error);
-      });  
-    },[])
     //登録時に実行する関数
     async function taskRegist(){
       let flag = 0;
-      if(date <= new Date() && !(isBulk)){
+      //入力バリデーション
+      if(taskNameRef.current.value == "" || taskStartRef.current.value == "" || taskEndRef.current.value == "" || (!(isHome) && taskGotoRef.current.value == "")){
+        await showModal('未入力項目があります',["確認"])
+        flag = 1
+      }
+      if(date.isBefore(dateUtil.getToday()) && !(isBulk) && flag == 0){
         flag = await showModal('日付が本日かそれ以前ですが\nよろしいですか？',["はい","キャンセル"]);
       } 
-      if(isBulk){
-        let p = false;
+      if(isBulk && flag == 0){
+        let includeBeforeDateFlag = false;
         for(let i = 0;i<bulkDates.length;i++){
-          if(new Date(bulkDates[i]) <= new Date()){
-            p = true;
+          if(bulkDates[i].isBefore(dateUtil.getToday())){
+            includeBeforeDateFlag = true;
           }
         }
-        if(p){
+        if(includeBeforeDateFlag){
           flag = await showModal('日付が本日かそれ以前が含まれていますが\nよろしいですか？',["はい","キャンセル"]);
         }
-      } 
-      console.log(flag)
+      }
       if(flag == 0){
       setRegistState("登録中");
       const button = document.getElementById("regist");
       button.disabled = true;
-      const name = document.getElementById("name").value || "名前無し";
-      const start = document.getElementById("starttime").value || "00:00";
-      const end = document.getElementById("endtime").value || "23:59";
-      let gototime = "00:00";
-      if(!(isHome)){
-        gototime = document.getElementById("gototime").value || "00:00";
-      }
-      const memo = document.getElementById("memo").value || "めもなし";
-      let home = 0
-      if(!(isHome)){
-        home = 1
-      }
-      const collapseTasks = getCollapse(date,StoTime(start),StoTime(end),id)
-      console.log(date,StoTime(start),StoTime(end),id,collapseTasks)
+      const collapseTasks = await getCollapse(date,StoTime(taskStartRef.current.value),StoTime(taskEndRef.current.value),id)
       let dltList = []
       let postfrag = true
       for (const collapseId of collapseTasks) {
-        const collapseDetail = getTaskDetails(collapseId);
+        const collapseDetail = await getTaskDetails(collapseId);
         const result = await showModal(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, [`「${collapseDetail.name}」を削除`,`このタスクを登録しない`,`両方保存する(非推奨)`]);
         switch(result){
             case 0:
@@ -144,18 +90,13 @@ function Regist(){
       }
       if(postfrag){
         if(!(isBulk)){
-          axios.post(
-            'https://fam-api-psi.vercel.app/api/tasks',
-            {userid:id,
-              taskname:name,
-              forgoto:gototime+":00",
-              date:date.getFullYear()+"-"+Number(date.getMonth()+1)+"-"+date.getDate(),
-              start:start+":00",
-              end:end+":00",
-              memo:memo,
-              isHome:home
-          }
-          )
+          await postTask(id,taskNameRef.current.value,
+            taskGotoRef?.current?.value ?? "00:00",
+            date.format("YYYY-MM-DD"),
+            taskStartRef.current.value,
+            taskEndRef.current.value,
+            taskMemoRef.current.value,
+            isHome)
           if(dltList.length > 0){
             dltApi(dltList)
           }
@@ -163,20 +104,27 @@ function Regist(){
         }else{
           let paramses = [];
           for(let i = 0;i<bulkDates.length;i++){
-            paramses.push([id,name,gototime+":00",bulkDates[i],start+":00",end+":00",memo,home]);  
+            paramses.push([id,taskNameRef.current.value,
+            taskGotoRef?.current?.value ?? "00:00:00",
+            bulkDates[i].format("YYYY-MM-DD"),
+            taskStartRef.current.value + ":00",
+            taskEndRef.current.value + ":00",
+            taskMemoRef.current.value,
+            isHome]);  
           }
-          axios.post(`https://fam-api-psi.vercel.app/api/month`,{
+          await axios.post(`https://fam-api-psi.vercel.app/api/month`,{
             values:paramses
               }).then(()=>{
-                  console.log("成功");
                   navigate(`/infom`);
               }
               ).catch((err)=>
                   {
                     alert('予期してないというと\n嘘になるエラーが発生しました\n開発者に問い合わせて下さい')
+                    console.log(err)
                   }
               );
           }
+          localStorage.removeItem("task")
         }
         else{
           back()
@@ -186,37 +134,6 @@ function Regist(){
     //画面遷移戻し
     function back(){
         navigate(`/infom`)
-    }
-    //日付変更時
-    function changeDate(e){
-      console.log(e.target.value);
-      const [yy,mm,dd] = e.target.value.split("-");
-      setDate(new Date(yy,mm-1,dd));
-      if(isBulk){
-      let finishDate = new Date(yy,Number(mm)+2,dd)
-      setEndDate(`~終了 ${finishDate.getFullYear()}/${finishDate.getMonth()}/${finishDate.getDate()}`)
-      }
-    }
-    //一括設定変更時
-    function changeBulk(){
-      if(isBulk){
-        setBulk(false);
-        setDateLabel("日付")
-        setEndDate("")
-      }else{
-        setBulk(true);
-        setDateLabel("開始")
-        let finishDate = new Date(date.getFullYear(),date.getMonth()+3,date.getDate())
-        setEndDate(`~終了 ${finishDate.getFullYear()}/${finishDate.getMonth()}/${finishDate.getDate()}`)
-      }
-    }
-    //在宅設定変更時
-    function changeHome(){
-      if(isHome){
-        setIsHome(false);
-      }else{
-        setIsHome(true);
-      }
     }
     if (date == null){
       return(<p>読み込み中...</p>)
@@ -236,21 +153,21 @@ function Regist(){
             }}
         />
         <div class="naka">
-          <div className = "multiple">複数日付登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>changeBulk()} className="ookiku"/></div>
-          <div className = "atHome">在宅:<input type = "checkbox" checked = {isHome} onChange = {()=>changeHome()} className="ookiku"/></div>
-          <input type="text" id="name" class="naka" placeholder="なにをする？" /><br/>
+          <div className = "multiple">複数日付登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>{setBulk((prev)=>!prev)}} className="ookiku"/></div>
+          <div className = "atHome">在宅:<input type = "checkbox" checked = {isHome} onChange = {()=>{setIsHome((prev)=>!prev)}} className="ookiku"/></div>
+          <input type="text" id="name" class="naka" ref = {taskNameRef} placeholder="なにをする？" /><br/>
           {!isBulk &&(
-          <div>日付:<input type="date" id="date" value = {`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`} onChange = {(e)=>changeDate(e)}/>({["日","月","火","水","木","金","土"][date.getDay()]}曜日)</div>
+          <div>日付:<input type="date" id="date" value = {dateUtil.dateToString(date)} onChange = {(e)=>setDate(dateUtil.stringToDate(e.target.value))}/>({dateUtil.getDDDay(date)})</div>
           )
         }
-          <input type="time" id="starttime" /><a>&rarr;</a>
-          <input type="time" id="endtime" /><br/>
+          <input type="time" id="starttime" ref = {taskStartRef}/><a>&rarr;</a>
+          <input type="time" id="endtime" ref = {taskEndRef}/><br/>
           {!isHome && (
             <>
-              移動時間 : <input type="time" id="gototime"/><br/>
+              移動時間 : <input type="time" id="gototime" ref = {taskGotoRef}/><br/>
             </>
           )}
-          <input type="text" id="memo" class="naka" placeholder="メモ"/><br/>
+          <input type="text" id="memo" class="naka" ref = {taskMemoRef} placeholder="メモ"/><br/>
           {isBulk &&(
           <Calender bulkDates = {bulkDates} setBulkDates = {setBulkDates}/>
           )
@@ -260,59 +177,53 @@ function Regist(){
         </div>
         </>
       )
-    }
+}
 
 function Calender(props){
   //変数定義********************************
-  const [today,setToday] = useState(new Date());
-  const [firstDay,setFirstDay] = useState(new Date(today.getFullYear(),today.getMonth(),1));
-  const [lastDay,setLastDay] = useState(new Date(today.getFullYear(),today.getMonth()+1,0));
+  const [dispDay,setDispDay] = useState(dateUtil.getToday());
+  const [firstDay,setFirstDay] = useState(dateUtil.getFirstday(dispDay));
+  const [lastDay,setLastDay] = useState(dateUtil.getFinalday(dispDay));
   const [cells,setCells] = useState([]);
   const [bulkDates,setBulkDates] = [props.bulkDates,props.setBulkDates];
-  //どうでもいい変数
   //関数定義****************************
-  //日付クラスをyyyy-mm-dd形式に
-  function dateToString(date){
-    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`
-  }
   //日付をクリックしたときの処理
   function selectDate(dayNum){
-    console.log(today.getFullYear(),today.getMonth(),dayNum.i);
-    let date =dateToString(new Date(today.getFullYear(),today.getMonth(),dayNum.i));
-    console.log(date);
+    let date = dateUtil.stringToDate(dispDay.format("YYYY-MM-")+String(dayNum));
     let bulkDates_ = [...bulkDates];
-    if(bulkDates_.includes(date)){
-      bulkDates_ = bulkDates_.filter(theDate => theDate !== date);
+    if(dateUtil.dateIncludes(bulkDates_,date)){
+      bulkDates_ = bulkDates_.filter(theDate => !(theDate.isSame(date)));
     }
     else{
       bulkDates_.push(date)
     }
-    console.log(bulkDates_);
     setBulkDates(bulkDates_)
   }
   //曜日をクリック時に一斉二選択
   function clarenderDay(day){
     let bulkDates_ = [...bulkDates];
-    for(let i = 1;i<= lastDay.getDate();i++){
-      let serDate = new Date(today.getFullYear(),today.getMonth(),i);
-      let serDateString = dateToString(serDate);
-      if(day == serDate.getDay()){
-        if(bulkDates_.includes(serDateString)){
-          bulkDates_ = bulkDates_.filter(theDate => theDate !== serDateString);
+    let firstIsInclude = null
+    for(let i = 1;i<= Number(lastDay.format("DD"));i++){
+      let serDate = dateUtil.stringToDate(dispDay.format("YYYY-MM-")+String(i));
+      if(day == serDate.format("d")){
+        if(firstIsInclude == null){
+          firstIsInclude = dateUtil.dateIncludes(bulkDates,serDate)
+        }
+        if(firstIsInclude){
+          bulkDates_ = bulkDates_.filter(theDate => !(theDate.isSame(serDate)));
         }
         else{
-          bulkDates_.push(serDateString)
+          bulkDates_.push(serDate)
         }
       }
     }
-    console.log(bulkDates_);
     setBulkDates(bulkDates_)
   }
   //月の移動を実装
   function MoveMonth(mode){
-    setToday(new Date(today.getFullYear(),today.getMonth()+mode,today.getDate()))
-    setFirstDay(new Date(firstDay.getFullYear(),firstDay.getMonth()+mode,1));
-    setLastDay(new Date(lastDay.getFullYear(),lastDay.getMonth()+mode,0));
+    setDispDay((prev)=> prev.add(mode,"month"))
+    setFirstDay((prev)=> prev.add(mode,"month"))
+    setLastDay((prev)=> prev.add(mode,"month"))
   }
   //レンダリング関数*************************
   //列を作成する
@@ -327,16 +238,16 @@ function Calender(props){
   useEffect(()=>{
     const numToDay =  [6,0,1,2,3,4,5];
     let cells_ = [];
-    for(let i = -numToDay[firstDay.getDay()]+1;i<= lastDay.getDate() + 6-numToDay[lastDay.getDay()];i++){
+    for(let i = -numToDay[firstDay.format("d")]+1;i<= Number(lastDay.format("DD")) + 6-numToDay[Number(lastDay.format("d"))];i++){
       if(i <= 0){
         cells_.push(<td></td>)
       }
-      else if(i <= lastDay.getDate()){
-        if(bulkDates.includes(dateToString(new Date(today.getFullYear(),today.getMonth(),i)))){
-          cells_.push(<td className = "selection" onClick = {()=>selectDate({i})}>{i}</td>)
+      else if(i <= Number(lastDay.format("DD"))){
+        if(dateUtil.dateIncludes(bulkDates,(dateUtil.stringToDate(dispDay.format("YYYY-MM-")+String(i))))){
+          cells_.push(<td className = "selection" onClick = {()=>selectDate(i)}>{i}</td>)
         }
         else{
-          cells_.push(<td onClick = {()=>selectDate({i})}>{i}</td>)
+          cells_.push(<td onClick = {()=>selectDate(i)}>{i}</td>)
         }
       }
       else{
@@ -344,11 +255,11 @@ function Calender(props){
       }
     }
     setCells(cells_)
-  },[bulkDates,today])
-  //画面校正**********************
+  },[bulkDates,dispDay])
+  //画面構成**********************
   return(
     <div>
-      <button onClick = {()=>MoveMonth(-1)}>先月 &lt; </button><a className = "yyyy-mm">{ dateToString(today).slice(0,7) }</a><button onClick = {()=>MoveMonth(1)}>&gt; 翌月</button>
+      <button onClick = {()=>MoveMonth(-1)}>先月 &lt; </button><a className = "yyyy-mm">{dispDay.format("YYYY年M月") }</a><button onClick = {()=>MoveMonth(1)}>&gt; 翌月</button>
       <table  className = "calender">
         <thead>
           <tr>
