@@ -1,8 +1,8 @@
 import axios from "axios";
 import dayjs from "dayjs";
 //タスクのアップデート
-export function update(name,goto,start,end,memo,ids,isHome){
-    axios.put(
+export async function update(name,goto,start,end,memo,ids,isHome){
+    await axios.put(
         'https://fam-api-psi.vercel.app/api/tasks',
         {
             taskname:name,

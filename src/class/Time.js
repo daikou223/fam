@@ -18,6 +18,12 @@ export default class Time{
         return Number(this.hour) * 3600 + Number(this.minute) * 60 + Number(this.second);
     }
     disp(){
+        if(this.hour < 0){
+            return "00:00"
+        }
+        else if(this.hour > 23){
+            return "24:00"
+        }
         return `${String(this.hour).padStart(2,'0')}:${String(this.minute).padStart(2,'0')}`
     }
 }

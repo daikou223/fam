@@ -29,6 +29,7 @@ function TaskMenu(){
     if(localStorage.getItem("task")){
       tmpdataDisp()
     }
+    localStorage.removeItem("task")
     const FullTask =  await taskUtil.getTask()
     if(FullTask){
       setIsLoading(false)

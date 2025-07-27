@@ -19,6 +19,7 @@ function Regist(){
     const [date,setDate] = useState(dateUtil.getToday());
     const [isBulk,setBulk] = useState(false);
     const [isHome,setIsHome] = useState(false);
+    const [isAllDay,setAllDay] = useState(false);
     const [bulkDates,setBulkDates] = useState([]);
     const [message,setMessage] = useState("このメッセージが見えたらおかしいよ.見えたらスクショして管理者に送って~");
     const [selection,setSelection] = useState(["選択１","選択2","選択３"]);
@@ -46,7 +47,7 @@ function Regist(){
     async function taskRegist(){
       let flag = 0;
       //入力バリデーション
-      if(taskNameRef.current.value == "" || taskStartRef.current.value == "" || taskEndRef.current.value == "" || (!(isHome) && taskGotoRef.current.value == "")){
+      if(taskNameRef.current.value == "" || (!(isAllDay) && (taskStartRef.current.value == "" || taskEndRef.current.value == "")) || (!(isHome) && taskGotoRef.current.value == "")){
         await showModal('未入力項目があります',["確認"])
         flag = 1
       }
@@ -68,7 +69,7 @@ function Regist(){
       setRegistState("登録中");
       const button = document.getElementById("regist");
       button.disabled = true;
-      const collapseTasks = await getCollapse(date,StoTime(taskStartRef.current.value),StoTime(taskEndRef.current.value),id)
+      const collapseTasks = await getCollapse(date,isAllDay ? new Time(0,0,0) :StoTime(taskStartRef.current.value),isAllDay ? new Time(23,59,0) :StoTime(taskEndRef.current.value),id)
       let dltList = []
       let postfrag = true
       for (const collapseId of collapseTasks) {
@@ -93,10 +94,10 @@ function Regist(){
           await postTask(id,taskNameRef.current.value,
             taskGotoRef?.current?.value ?? "00:00",
             date.format("YYYY-MM-DD"),
-            taskStartRef.current.value,
-            taskEndRef.current.value,
+            isAllDay ? "00:00" : taskStartRef.current.value,
+            isAllDay ? "23:59" : taskEndRef.current.value,
             taskMemoRef.current.value,
-            isHome)
+            isHome?0:1)
           if(dltList.length > 0){
             dltApi(dltList)
           }
@@ -107,10 +108,10 @@ function Regist(){
             paramses.push([id,taskNameRef.current.value,
             taskGotoRef?.current?.value ?? "00:00:00",
             bulkDates[i].format("YYYY-MM-DD"),
-            taskStartRef.current.value + ":00",
-            taskEndRef.current.value + ":00",
+            isAllDay ? "00:00:00" : taskStartRef.current.value + ":00",
+            isAllDay ? "23:59:00" : taskEndRef.current.value + ":00",
             taskMemoRef.current.value,
-            isHome]);  
+            isHome ? 0:1]);  
           }
           await axios.post(`https://fam-api-psi.vercel.app/api/month`,{
             values:paramses
@@ -155,13 +156,15 @@ function Regist(){
         <div class="naka">
           <div className = "multiple">複数日付登録:<input type = "checkbox" checked = {isBulk} onChange = {()=>{setBulk((prev)=>!prev)}} className="ookiku"/></div>
           <div className = "atHome">在宅:<input type = "checkbox" checked = {isHome} onChange = {()=>{setIsHome((prev)=>!prev)}} className="ookiku"/></div>
+          <div className = "atAllDay">終日:<input type = "checkbox" checked = {isAllDay} onChange = {()=>{setAllDay((prev)=>!prev)}} className="ookiku"/></div>
           <input type="text" id="name" class="naka" ref = {taskNameRef} placeholder="なにをする？" /><br/>
           {!isBulk &&(
           <div>日付:<input type="date" id="date" value = {dateUtil.dateToString(date)} onChange = {(e)=>setDate(dateUtil.stringToDate(e.target.value))}/>({dateUtil.getDDDay(date)})</div>
           )
         }
+        {!isAllDay && (<>
           <input type="time" id="starttime" ref = {taskStartRef}/><a>&rarr;</a>
-          <input type="time" id="endtime" ref = {taskEndRef}/><br/>
+          <input type="time" id="endtime" ref = {taskEndRef}/><br/></>)}
           {!isHome && (
             <>
               移動時間 : <input type="time" id="gototime" ref = {taskGotoRef}/><br/>
@@ -177,7 +180,7 @@ function Regist(){
         </div>
         </>
       )
-}
+    }
 
 function Calender(props){
   //変数定義********************************
