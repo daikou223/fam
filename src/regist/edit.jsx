@@ -64,7 +64,7 @@ function Edit(){
     })
     },[]);
     useEffect(()=>{
-        if(task){
+        if(task && !name){
             setName(task.taskname);
             setStart(task.start);
             setEnd(task.end);
@@ -108,24 +108,18 @@ function Edit(){
         for (const targetId of targetIds) {
             await loopcollapseTask(targetId);
         }
-        let p = 0
         if(putList.current.length > 0){
-            update(name,goto,StoTime(start).disp(),StoTime(end).disp(),memo,putList.current,isHome)
-            p = 1
+            await update(name,goto,StoTime(start).disp(),StoTime(end).disp(),memo,putList.current,isHome)
         }
         if(dltList.current.length > 0){
-            dltApi(dltList.current)
-            p = 1
+            await dltApi(dltList.current)
         }
-        //どっちもない場合は独座に戻す
-        if(p == 0){
-            navigate(`/infom`);
-        }
+        navigate(`/infom`);
     }
     //各タスクに応じて、衝突タスクを探す
     async function loopcollapseTask(targetid){
         const targetDetail = getTaskDetails(targetid)
-        const collapseTasks = getCollapse(targetDetail.date,StoTime(start),StoTime(end),targetDetail.user_id)
+        const collapseTasks = await getCollapse(targetDetail.date,StoTime(start),StoTime(end),targetDetail.user_id)
         for (const collapseId of collapseTasks) {
             if(collapseId != targetid){
                 const collapseDetail = getTaskDetails(collapseId);
