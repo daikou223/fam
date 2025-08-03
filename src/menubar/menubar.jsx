@@ -1,6 +1,7 @@
 import React,{useEffect,useState} from 'react';
 import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
+import styles from "./style.module.css"
 
 //個人日程
 export default function Menubar(props){
@@ -23,52 +24,6 @@ export default function Menubar(props){
         new menuItem("タスク検索","/serch"),
         new menuItem("印刷用メニュー","/div"),
     ]
-    //スタイル
-    const styles = {
-        menuButton:{
-            height:35,
-            position: "fixed", // ← 画面に固定
-            top: 20,           // ← 上からの距離
-            left: 20,         // ← 右からの距離
-            zIndex: 1000,      // ← 前面に表示
-            marginBottom:5,
-            removeAfterPrint: true
-        },
-        menuNonActiveButton:{
-            height:35,
-            position: "fixed", // ← 画面に固定
-            top: 20,           // ← 上からの距離
-            left: 20,         // ← 右からの距離
-            zIndex: 1000,      // ← 前面に表示
-            marginBottom:5,
-            removeAfterPrint: true,
-            backgroundColor:"gray"
-        },
-        menuTable:{
-            position: "fixed", 
-            zIndex: 1000,   
-            backgroundColor: "rgba(255,255,255,0.9)",
-            height:window.innerHeight,
-            width:window.innerWidth/2,
-        },
-        menuCell:{
-            margin:12,
-            borderBottom:"1px solid gray",
-            fontsize:"large"
-        },
-        upline:{
-            height:6,
-            borderTop:"2px solid black",
-            width:25,
-        },
-        uplineDash:{
-            height:6,
-            borderTop:"2px solid black",
-            width:25,
-            marginTop:3,
-        }
-
-    }
     //関数定義************************************
     const menuOpen = ()=>{
         setMenuIsOpen(!(menuIsOpen))
@@ -86,28 +41,33 @@ export default function Menubar(props){
         }
     };
     //リターン文***************************************
-    return(
-    <div>
-        {!menuIsOpen ? 
-        (
-            <>
-            <button style = {isActive ? styles.menuButton: styles.menuNonActiveButton} onClick = {handleClick}>
-                <div style = {styles.uplineDash}></div>
-                <div style = {styles.upline}></div>
-                <div style = {styles.upline}></div>
-            </button>
-            {/* <p>これはメッセージ</p> */}
-            </>
-        )
-        :(
-        <div style = {styles.menuTable}>
-            <button onClick = {()=>menuOpen()}>menu&lt;</button>
-            {menuTable.map((theMenu)=>(
-                (<div style = {styles.menuCell} onClick = {()=>screenTransition(theMenu.url)}>{theMenu.title}</div>)
-            ))
-            }
+    return (
+  <div className={styles.menuberWarraper}>
+    {!menuIsOpen ? (
+      <>
+        <button
+          className={isActive ? styles.menuButton : styles.menuNonActiveButton}
+          onClick={handleClick}
+        >
+          <div className={styles.uplineDash}></div>
+          <div className={styles.upline}></div>
+          <div className={styles.upline}></div>
+        </button>
+      </>
+    ) : (<></>)}
+    <div className={`${styles.menuTable} ${menuIsOpen ? styles.menuOpen : ""}`}>
+    <button onClick={() => menuOpen()}>menu&lt;</button>
+    {menuTable.map((theMenu) => (
+        <div
+        key={theMenu.url}
+        className={styles.menuCell}
+        onClick={() => screenTransition(theMenu.url)}
+        >
+        {theMenu.title}
         </div>
-    )
-    }</div>
-)
+    ))}
+    </div>
+  </div>
+);
+
 }
