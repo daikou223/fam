@@ -34,7 +34,6 @@ function TheQuest({quest,id,cont,setCont,allTask,setAllTasks}){
 
             }).then((res)=>{
                 console.log(`${quest.title}着手`)
-                console.log(allTask);
                 const tempAllTasks = [...allTask]
                 const index = tempAllTasks.indexOf(quest);
                 if (index !== -1) {

@@ -8,8 +8,9 @@ import Menubar from "../menubar/menubar"
 import TaskList,{getSameTask, getCollapse, getTaskDetails} from "./../class/TaskClass"
 import dayjs from 'dayjs';
 import Modal from "./../modal/modal"
-import Time,{StoTime} from "./../class/Time"
+import * as TimeUtil from "./../class/Time"
 import {update,dltApi} from "./../api/TaskApi"
+import * as TaskUtil from "./../class/TaskClass"
 
 function Edit(){
     //変数************************************
@@ -48,27 +49,22 @@ function Edit(){
     //関数*************************************
     //effect関数
     useEffect(()=>{
-    axios.get(
-        `https://fam-api-psi.vercel.app/api/task/${id}`
-    ).then(
-        response=>{
-            if(response.data.length == 0){
-                navigate(`/infom`);
+        (async()=>{
+            const gettedTask = await TaskUtil.getTaskWithId(id)
+            if(!gettedTask){
+                navigate("/infom")
             }
-            const data = response.data[0];
-            setTask(data);
-        }
-    ).catch((error) => {
-        console.error("データ取得に失敗しました:", error);
-        navigate(`/infom`);
-    })
-    },[]);
+            else{
+                setTask(gettedTask)
+            }
+        })()
+    },[])
     useEffect(()=>{
         if(task && !name){
-            setName(task.taskname);
-            setStart(task.start);
-            setEnd(task.end);
-            setGoto(task.forgoto);
+            setName(task.name);
+            setStart(task.start.disp());
+            setEnd(task.end.disp());
+            setGoto(task.forgoto.disp());
             setMemo(task.memo);
             setIsHome(task.isHome);
             setDate(task.date);
@@ -76,7 +72,6 @@ function Edit(){
     },[task]);
     //通常関数
     function nameChange(e){
-        console.log(e.target.value);
         setName(e.target.value);
     }
     function startChange(e){
@@ -109,7 +104,7 @@ function Edit(){
             await loopcollapseTask(targetId);
         }
         if(putList.current.length > 0){
-            await update(name,goto,StoTime(start).disp(),StoTime(end).disp(),memo,putList.current,isHome)
+            await update(name,goto,TimeUtil.StoTime(start),TimeUtil.StoTime(end),memo,putList.current,isHome)
         }
         if(dltList.current.length > 0){
             await dltApi(dltList.current)
@@ -119,7 +114,7 @@ function Edit(){
     //各タスクに応じて、衝突タスクを探す
     async function loopcollapseTask(targetid){
         const targetDetail = getTaskDetails(targetid)
-        const collapseTasks = await getCollapse(targetDetail.date,StoTime(start),StoTime(end),targetDetail.user_id)
+        const collapseTasks = await getCollapse(targetDetail.date,TimeUtil.StoTime(start),TimeUtil.StoTime(end),targetDetail.user_id)
         for (const collapseId of collapseTasks) {
             if(collapseId != targetid){
                 const collapseDetail = getTaskDetails(collapseId);
@@ -170,7 +165,7 @@ function Edit(){
         navigate("/infom")
     }
     //リターン文******************************************
-    if(!task || !task.task_id){
+    if(!task || !task.id){
         return(
             <div class = "center">
                 読み込み中

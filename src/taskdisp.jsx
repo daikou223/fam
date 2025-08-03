@@ -21,24 +21,29 @@ function TaskMenu(){
   const [cousion,setCousion] = useState("読み込み中のため、前回読み込んだ情報を表示しています");
   const [cousionClass,setCousionClass] = useState("cousion");
   const [isLoading,setIsLoading] = useState(true);
-  const [IsData,setIsData] = useState(false)
+  const [IsData,setIsData] = useState(false);
+  let isNet = false
   const MAXTIME = 24*3600-1
-  //初期化のためのEffect
+  //画面に入ってきた時、キャッシュを更新
   useEffect(() => {(async()=>{
     //localStrageに入ってるなら取りえずそれを出力
     if(localStorage.getItem("task")){
       tmpdataDisp()
     }
-    localStorage.removeItem("task")
-    const FullTask =  await taskUtil.getTask()
-    if(FullTask){
+    if(!isNet){
+      isNet = true
+      const FullTask =  await taskUtil.getTask("force")
       setIsLoading(false)
       setCousion("")
       setCousionClass("")
       disp(FullTask)
+      isNet = false
     }
     })()
-  }, [date]);
+  }, []);
+  useEffect(()=>{
+    tmpdataDisp()
+  },[date])
   function tmpdataDisp(){
     //taskリストのフォーマット化(dayjsがうまく行かないはず)
     disp(taskUtil.formater(JSON.parse(localStorage.getItem("task"))).tasks)

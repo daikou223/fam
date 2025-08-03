@@ -20,7 +20,6 @@ export default function Menubar(props){
     const menuTable = [
         new menuItem("今日の予定","/infom"),
         new menuItem("予定登録","/register"),
-        new menuItem("週間予定","/week"),
         new menuItem("タスク検索","/serch"),
         new menuItem("印刷用メニュー","/div"),
     ]

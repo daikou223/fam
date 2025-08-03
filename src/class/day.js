@@ -45,6 +45,10 @@ function dateDisplay(date){
     return date.format("MM月DD日")
 }
 
+function getOnlyDate(date){
+    const days = ["(日)","(月)","(火)","(水)","(木)","(金)","(土)"];
+    return date.format("D日") + days[date.format("d")]
+}
 function dateFullDisplay(date){
     return date.format("YYYY年M月D日")
 }
@@ -85,5 +89,5 @@ function testFunc(){
 
 //testFunc()
 export {getYestaday,getTomorrow,getToday,stringToDate,dateToString,dateDisplay,dateFullDisplay,getDay,getDDDay
-    ,getFirstday,getFinalday,setDate,dateIncludes
+    ,getFirstday,getFinalday,setDate,dateIncludes,getOnlyDate
 }

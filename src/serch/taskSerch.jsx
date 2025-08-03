@@ -22,7 +22,6 @@ function Serch(){
                 filterdData_.push(lowData[i]);
             }
         }
-        console.log(filterdData_)
         setFilterdData(filterdData_);
     }
     return(
