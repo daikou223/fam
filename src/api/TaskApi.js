@@ -33,8 +33,8 @@ export async function dltApi(ids){
     )
 }
 //タスクの取得
-export async function getTask(){
-    if(localStorage.getItem("task") && localStorage.getItem("date") && dayjs(localStorage.getItem("date")).diff(dayjs(),"hour",true) > -1){
+export async function getTask(mode = ""){
+    if(localStorage.getItem("task") && mode == ""){
         let result = JSON.parse(localStorage.getItem("task"));
         return result
     }

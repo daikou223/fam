@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import * as ApiUtil from "./../api/TaskApi"
 import * as dayUtil from "./day"
 
-async function initialized() {
-    const tasksList = await ApiUtil.getTask();
+async function initialized(mode = "") {
+    const tasksList = await ApiUtil.getTask(mode);
     return formater(tasksList)
 }
 
@@ -48,6 +48,7 @@ export default class TaskList{
         this.idToTask = {}
     }
 }
+
 class task{
     date
     end
@@ -68,6 +69,8 @@ class task{
         this.id = id
         this.user_id = user_id
         this.name = name
+        this.goOutTime = TimeUtil.secondToTime(this.start.toSeconds()-this.forgoto.toSeconds()) 
+        this.goHomeTime = TimeUtil.secondToTime(this.end.toSeconds()+this.forgoto.toSeconds()) 
     }
 }
 /* date:"2025-03-06T00:00:00.000Z"end:"23:59:00"forgoto:"01:15:00"isHome:1
@@ -107,7 +110,19 @@ export async function getTaskOnlyId(){
     return FullTask.tasksOnlyId
 }
 
-export async function getTask(){
-    const FullTask = await initialized()
+export async function getTask(mode = ""){
+    const FullTask = await initialized(mode)
     return FullTask?.tasks
+}
+
+export async function getTaskWithConditions(user,date){
+    const FullTask = await initialized()
+    return FullTask.tasks.filter((task)=>{
+        return task.user_id === user && task.date.isSame(date,"day") && task.isHome == 1
+    })
+}
+
+export async function getTaskWithId(id){
+    const FullTask = await initialized()
+    return FullTask.idToTask?.[id]
 }

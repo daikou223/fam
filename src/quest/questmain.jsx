@@ -16,7 +16,6 @@ function QuestMenu(){
         axios.get(
             `https://fam-api-psi.vercel.app/api/quest/${id}`
         ).then((responce)=>{
-            console.log(responce.data);
             let tempcont = [];
             let tempallTasks = [];
             for(let i = 0;i<responce.data.length;i++){

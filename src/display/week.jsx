@@ -2,6 +2,8 @@ import React,{useEffect,useState} from 'react';
 import axios from "axios";
 import Menubar from "../menubar/menubar"
 import Time,{timeSubstruct,timeAdd,StoTime} from "../class/Time"
+import * as TaskUtil from "./../class/TaskClass"
+
 //家族の一週間の予定を見るやつ
 function Week(){
     function toDate(dateString){
@@ -54,25 +56,18 @@ function Week(){
         setAllTasks({...allTask});
       }
       setTasks([[],[],[],[]]);
-      axios
-      .get(`https://fam-api-psi.vercel.app/api/tasks`)             //リクエストを飛ばすpath
-      .then(response => {
-          let result = response.data;
-          let allTask = {};
-          result.map((task)=>{
-            task.date = toDate(task.date);
-            if(!(task.date in allTask)){
-              allTask[task.date] = [task]
-            }
-            else{
-              allTask[task.date].push(task)
-            }
-          })
-          setAllTasks(allTask);
-      })                               //成功した場合、postsを更新する（then）
-      .catch((error) => {
-          console.log('通信に失敗しました',error);
-      });                             //失敗した場合(catch)
+      let result = TaskUtil.getTask();
+      let allTask = {};
+      result.map((task)=>{
+        task.date = toDate(task.date);
+        if(!(task.date in allTask)){
+          allTask[task.date] = [task]
+        }
+        else{
+          allTask[task.date].push(task)
+        }
+      })
+      setAllTasks(allTask);  
   }, []);
     useEffect(()=>{
       let dateTasks = {}
@@ -95,7 +90,6 @@ function Week(){
       })
       let viewDay = new Date()
       let view_ = []
-      console.log(dateTasks)
       let isColor = false
       for(let day = 0;day < 14;day++){
         //その日に何個タスクがあるのかをはかる
