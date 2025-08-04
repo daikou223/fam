@@ -46,7 +46,9 @@ function TaskMenu(){
   },[date])
   function tmpdataDisp(){
     //taskリストのフォーマット化(dayjsがうまく行かないはず)
-    disp(taskUtil.formater(JSON.parse(localStorage.getItem("task"))).tasks)
+    if(localStorage.getItem("task")){
+      disp(taskUtil.formater(JSON.parse(localStorage.getItem("task"))).tasks)
+    }
   }
   function disp(Data){
     let parsonTask = [[],[],[],[]]

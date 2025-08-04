@@ -96,21 +96,22 @@ function Regist(){
             date.format("YYYY-MM-DD"),
             isAllDay ? "00:00" : taskStartRef.current.value,
             isAllDay ? "23:59" : taskEndRef.current.value,
-            taskMemoRef.current.value,
+            taskMemoRef.current?.value ?? "",
             isHome?0:1)
           if(dltList.length > 0){
-            dltApi(dltList)
+            await dltApi(dltList)
           }
           back()
         }else{
           let paramses = [];
           for(let i = 0;i<bulkDates.length;i++){
-            paramses.push([id,taskNameRef.current.value,
+            paramses.push([id,
+              taskNameRef.current?.value ?? "",
             taskGotoRef?.current?.value ?? "00:00:00",
             bulkDates[i].format("YYYY-MM-DD"),
             isAllDay ? "00:00:00" : taskStartRef.current.value + ":00",
             isAllDay ? "23:59:00" : taskEndRef.current.value + ":00",
-            taskMemoRef.current.value,
+            taskMemoRef.current?.value ?? "",
             isHome ? 0:1]);  
           }
           await axios.post(`https://fam-api-psi.vercel.app/api/month`,{
