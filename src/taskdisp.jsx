@@ -105,6 +105,7 @@ function TaskMenu(){
               ))}
           </div>
           ))}
+          {localStorage.getItem("debug") && <p className = "cousion" style = {{ whiteSpace: "pre-line" }}> デバッグモードです。</p>}
           <p className = {cousionClass} style = {{ whiteSpace: "pre-line" }}> { isLoading ? cousion:"" }</p>
           </div></div>)
         }}
