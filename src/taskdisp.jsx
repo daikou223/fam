@@ -32,18 +32,17 @@ function TaskMenu(){
     }
     if(!isNet){
       isNet = true
-      const FullTask =  await taskUtil.getTask("force")
+      const res =  await taskUtil.getTask("force")
       setIsLoading(false)
       setCousion("")
       setCousionClass("")
-      disp(FullTask)
       isNet = false
     }
     })()
   }, []);
   useEffect(()=>{
     tmpdataDisp()
-  },[date])
+  },[date,isLoading])
   function tmpdataDisp(){
     //taskリストのフォーマット化(dayjsがうまく行かないはず)
     if(localStorage.getItem("task")){
@@ -51,6 +50,7 @@ function TaskMenu(){
     }
   }
   function disp(Data){
+    console.log(date)
     let parsonTask = [[],[],[],[]]
     let hometime_ = [[new Time(24,0,0),new Time(-1,0,0)],
                     [new Time(24,0,0),new Time(-1,0,0)],
