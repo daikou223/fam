@@ -50,7 +50,6 @@ function TaskMenu(){
     }
   }
   function disp(Data){
-    console.log(date)
     let parsonTask = [[],[],[],[]]
     let hometime_ = [[new Time(24,0,0),new Time(-1,0,0)],
                     [new Time(24,0,0),new Time(-1,0,0)],

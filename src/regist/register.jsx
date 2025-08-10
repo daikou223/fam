@@ -66,72 +66,98 @@ function Regist(){
         }
       }
       if(flag == 0){
-      setRegistState("登録中");
-      const button = document.getElementById("regist");
-      button.disabled = true;
-      const collapseTasks = await getCollapse(date,isAllDay ? new Time(0,0,0) :StoTime(taskStartRef.current.value),isAllDay ? new Time(23,59,0) :StoTime(taskEndRef.current.value),id)
-      let dltList = []
-      let postfrag = true
-      for (const collapseId of collapseTasks) {
-        const collapseDetail = await getTaskDetails(collapseId);
-        const result = await showModal(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, [`「${collapseDetail.name}」を削除`,`このタスクを登録しない`,`両方保存する(非推奨)`]);
-        switch(result){
-            case 0:
-                dltList.push(collapseId)
-                postfrag = true
-                break
-            case 1:
-              postfrag = false
+        setRegistState("登録中");
+        const button = document.getElementById("regist");
+        button.disabled = true;
+        let dltList = []
+        let postfrags = Array(isBulk ? bulkDates.length:1).fill(true)
+        if(!isBulk){
+          const collapseTasks = await getCollapse(date,isAllDay ? new Time(0,0,0) :StoTime(taskStartRef.current.value),isAllDay ? new Time(23,59,0) :StoTime(taskEndRef.current.value),id)
+          for (const collapseId of collapseTasks) {
+            const collapseDetail = await getTaskDetails(collapseId);
+            const result = await showModal(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, [`「${collapseDetail.name}」を削除`,`このタスクを登録しない`,`両方保存する(非推奨)`]);
+            switch(result){
+                case 0:
+                    dltList.push(collapseId)
+                    postfrags[0] = true
+                    break
+                case 1:
+                  postfrags[0] = false
+                  break
+            }
+            //あきらめるならこれ以上聞いても意味ない
+            if(result == 1){
               break
+            }
+          }
+        } else if (isBulk) {
+          for (let bulkIndex = 0;bulkIndex < bulkDates.length;bulkIndex++) {
+            const collapseTasks = await getCollapse(
+              bulkDates[bulkIndex],
+              isAllDay ? new Time(0,0,0) : StoTime(taskStartRef.current.value),
+              isAllDay ? new Time(23,59,0) : StoTime(taskEndRef.current.value),
+              id
+            );
+            for (const collapseId of collapseTasks) {
+            const collapseDetail = await getTaskDetails(collapseId);
+            const result = await showModal(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, [`「${collapseDetail.name}」を削除`,`このタスクを登録しない`,`両方保存する(非推奨)`]);
+            switch(result){
+                case 0:
+                    dltList.push(collapseId)
+                    postfrags[bulkIndex] = true
+                    break
+                case 1:
+                  postfrags[bulkIndex] = false
+                  break
+            }
+            //あきらめるならこれ以上聞いても意味ない
+            if(result == 1){
+              break
+            }
+          }
+          }
         }
-        //あきらめるならこれ以上聞いても意味ない
-        if(result == 1){
-          break
-        }
-      }
-      if(postfrag){
-        if(!(isBulk)){
-          await postTask(id,taskNameRef.current.value,
-            taskGotoRef?.current?.value ?? "00:00",
-            date.format("YYYY-MM-DD"),
-            isAllDay ? "00:00" : taskStartRef.current.value,
-            isAllDay ? "23:59" : taskEndRef.current.value,
-            taskMemoRef.current?.value ?? "",
-            isHome?0:1)
+
+          if(!(isBulk)){
+            if(postfrags[0]){
+              let paramses = [{"user_id":id,
+                  "taskname":taskNameRef.current?.value ?? "",
+                "forgoto":taskGotoRef?.current?.value ?? "00:00:00",
+                "date":date.format("YYYY-MM-DD"),
+                "start":isAllDay ? "00:00:00" : taskStartRef.current.value + ":00",
+                "end":isAllDay ? "23:59:00" : taskEndRef.current.value + ":00",
+                "memo":taskMemoRef.current?.value ?? "",
+                "isHome":isHome ? 0:1}]
+              await postTask(paramses)
+              if(dltList.length > 0){
+                await dltApi(dltList)
+              }
+              back()
+          }}else{
+            let paramses = [];
+            for(let i = 0;i<bulkDates.length;i++){
+              if(postfrags[i]){
+                paramses.push({"user_id":id,
+                "taskname":taskNameRef.current?.value ?? "",
+                "forgoto":taskGotoRef?.current?.value ?? "00:00:00",
+                "date":bulkDates[i].format("YYYY-MM-DD"),
+                "start":isAllDay ? "00:00:00" : taskStartRef.current.value + ":00",
+                "end":isAllDay ? "23:59:00" : taskEndRef.current.value + ":00",
+                "memo":taskMemoRef.current?.value ?? "",
+                "isHome":isHome ? 0:1}); 
+              } 
+            }
+            await postTask(paramses);
+          }
           if(dltList.length > 0){
             await dltApi(dltList)
           }
-          back()
-        }else{
-          let paramses = [];
-          for(let i = 0;i<bulkDates.length;i++){
-            paramses.push([id,
-              taskNameRef.current?.value ?? "",
-            taskGotoRef?.current?.value ?? "00:00:00",
-            bulkDates[i].format("YYYY-MM-DD"),
-            isAllDay ? "00:00:00" : taskStartRef.current.value + ":00",
-            isAllDay ? "23:59:00" : taskEndRef.current.value + ":00",
-            taskMemoRef.current?.value ?? "",
-            isHome ? 0:1]);  
-          }
-          await axios.post(`https://fam-api-psi.vercel.app/api/month`,{
-            values:paramses
-              }).then(()=>{
-                  navigate(`/infom`);
-              }
-              ).catch((err)=>
-                  {
-                    alert('予期してないというと\n嘘になるエラーが発生しました\n開発者に問い合わせて下さい')
-                    console.log(err)
-                  }
-              );
-          }
           localStorage.removeItem("task")
+          back()
         }
         else{
           back()
         }
-      }
     }
     //画面遷移戻し
     function back(){
