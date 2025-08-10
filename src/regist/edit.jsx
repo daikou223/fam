@@ -92,7 +92,8 @@ function Edit(){
         button.disabled = true;
         const Dbutton = document.getElementById("delete");
         Dbutton.disabled = true;
-        const sameTaskid = getSameTask(getTaskDetails(id).name,getTaskDetails(id).date)
+        const taskDetail = await getTaskDetails(id)
+        const sameTaskid = await getSameTask(taskDetail.name,taskDetail.date)
         //今更新しようとしているものも含まれる
         let sameIdFlag = false
         if(sameTaskid.length >= 2){
@@ -104,11 +105,12 @@ function Edit(){
             await loopcollapseTask(targetId);
         }
         if(putList.current.length > 0){
-            await update(name,goto,TimeUtil.StoTime(start),TimeUtil.StoTime(end),memo,putList.current,isHome)
+            await update(name,goto+":00",start+":00",end+":00",memo,putList.current,isHome)
         }
         if(dltList.current.length > 0){
             await dltApi(dltList.current)
         }
+        localStorage.removeItem("task")
         navigate(`/infom`);
     }
     //各タスクに応じて、衝突タスクを探す

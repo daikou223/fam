@@ -91,33 +91,19 @@ export async function getTask(mode = ""){
     }
 }
 //タスクの登録
-export async function postTask(id,name,gototime,date,start,end,memo,home){
+export async function postTask(values){
     if(!localStorage.getItem("debug")){
         await axios.post(
-            'https://fam-api-psi.vercel.app/api/tasks',
-            {userid:id,
-            taskname:name,
-            forgoto:gototime+":00",
-            date:date,
-            start:start+":00",
-            end:end+":00",
-            memo:memo,
-            isHome:home
+            'https://fam-api-psi.vercel.app/api/month',
+            {values:values
             }
         ).catch((error)=>{
             throw new Error('タスク保存エラー',error)
         })
     }else{
         await axios.post(
-            'https://fam-api-psi.vercel.app/api/debug/tasks',
-            {userid:id,
-            taskname:name,
-            forgoto:gototime+":00",
-            date:date,
-            start:start+":00",
-            end:end+":00",
-            memo:memo,
-            isHome:home
+            'https://fam-api-psi.vercel.app/api/debug/month',
+            {values:values
             }
         ).catch((error)=>{
             throw new Error('タスク保存エラー',error)
