@@ -155,9 +155,6 @@ function Regist(){
           localStorage.removeItem("task")
           back()
         }
-        else{
-          back()
-        }
     }
     //画面遷移戻し
     function back(){

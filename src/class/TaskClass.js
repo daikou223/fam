@@ -78,8 +78,9 @@ memo:""start:"20:30:00"task_id:811taskname:"夜勤仕事"user_id:2 */
 export async function getSameTask(name,date){
     const fullTask = await initialized()
     const SameTask_ = []
+    console.log(name,date)
     fullTask.tasks.map((task)=>{
-        if(task.name === name && date.isBefore(task.date)){
+        if(task.name === name && (date.isBefore(task.date) ||date.isSame(task.date)  )){
             SameTask_.push(task.id)
         }
     })

@@ -99,7 +99,7 @@ function Edit(){
         if(sameTaskid.length >= 2){
             sameIdFlag = await showModal("今後同名のタスクが存在しますが、同様に更新しますか？",["はい","更新しない"])
         }
-        const targetIds = sameIdFlag ? sameTaskid:[id]
+        const targetIds = sameIdFlag == 0 ? sameTaskid:[id]
         putList.current = targetIds
         for (const targetId of targetIds) {
             await loopcollapseTask(targetId);
