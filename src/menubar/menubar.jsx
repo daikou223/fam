@@ -26,7 +26,12 @@ export default function Menubar(props){
     ]
     //関数定義************************************
     const menuOpen = ()=>{
-        setMenuIsOpen(!(menuIsOpen))
+      console.log("open")
+      setMenuIsOpen(true)
+    }
+    const menuClose = ()=>{
+      console.log("close")
+      setMenuIsOpen(false)
     }
     const screenTransition = (url)=>{
         navigate(url)
@@ -55,8 +60,14 @@ export default function Menubar(props){
         </button>
       </>
     ) : (<></>)}
+    {menuIsOpen && (
+      <div
+        className={styles.overlay}
+          onClick={menuClose}
+      ></div>
+    )}
     <div className={`${styles.menuTable} ${menuIsOpen ? styles.menuOpen : ""}`}>
-    <button onClick={() => menuOpen()}>menu&lt;</button>
+    <button onClick={menuClose}>menu&lt;</button>
     {menuTable.map((theMenu) => (
         <div
         key={theMenu.url}
