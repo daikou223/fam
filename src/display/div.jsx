@@ -20,10 +20,9 @@ function Week(){
         blueBorder:{
             row:{backgroundColor:"lightblue"},
         },
-        botton:{
+        button:{
             display: "flex",
-            marginLeft:"20px",
-    fontSize:"20px",
+            fontSize:"20px",
 
      justifyContent: "center",
         }
@@ -68,7 +67,7 @@ window.print();
 
                     )
                 })}
-                <div style =  {styles.botton}>
+                <div style =  {styles.button}>
                 <button  id = "print" onClick={()=>{plt()}}>{buttonName}</button>     
                 </div>
             </div>
