@@ -14,6 +14,7 @@ function Week(){
     const [date,setDate] = useState(new Date());
     const [lastDate,setLastDate] = useState(new Date(date.getFullYear(),date.getMonth(),date.getDate()+6));
     const [tasks,setTasks] = useState([[],[],[],[]]);
+    const[buttonName,setButtonName] = useState("印刷");
     const [allTasks,setAllTasks] = useState({});
     const Name = ["こう","だい","はは","ちち"];
     const dayString = ["日","月","火","水","木","金","土"]
@@ -152,6 +153,14 @@ function Week(){
       }
       setviews(view_)
     },[allTasks])
+        function plt(){
+        setButtonName("保存中");
+        const printingButton = document.getElementById("print");
+        printingButton.disabled = true;
+window.print();
+        setButtonName("印刷");
+        printingButton.disabled = false;
+        }
     if (Object.keys(allTasks).length == 0 || tasks == []){
       return(
       <div className = "center">
@@ -169,6 +178,7 @@ function Week(){
               <tr style = {styles.row}><th style = {styles.cell}>日付</th><th style = {styles.cell}>人物</th><th style = {styles.cell}>出発時刻</th><th style = {styles.cell}>帰宅時刻</th></tr>
               {views ?? "読み込み中"}
           </table>
+          <button className = "print" id = "print" onClick={()=>{plt()}}>{buttonName}</button>
           </div>
         )
       }

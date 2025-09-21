@@ -10,6 +10,7 @@ import * as dateUtil from '../class/day'
 function Week(){
     //変数定義**************************
     let name = ["","弟","兄","母","父"] 
+    const[buttonName,setButtonName] = useState("印刷");
     //スタイル定義*************************
     const styles = {
         weekTable:{
@@ -19,7 +20,22 @@ function Week(){
         blueBorder:{
             row:{backgroundColor:"lightblue"},
         },
-    }
+        button:{
+            display: "flex",
+            fontSize:"20px",
+
+     justifyContent: "center",
+        }
+
+    }                
+        function plt(){
+        setButtonName("保存中");
+        const printingButton = document.getElementById("print");
+        printingButton.disabled = true;
+window.print();
+        setButtonName("印刷");
+        printingButton.disabled = false;
+        }
     return(
         <>
             <Menubar/>
@@ -47,10 +63,12 @@ function Week(){
                                 )
                                 }
                             </table>
-                        </div>
+                               </div>
+
                     )
                 })}
-                <div>
+                <div style =  {styles.button}>
+                <button  id = "print" onClick={()=>{plt()}}>{buttonName}</button>     
                 </div>
             </div>
         </>
