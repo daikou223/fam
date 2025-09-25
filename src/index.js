@@ -7,9 +7,7 @@ import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} 
 import TaskMenu from './taskdisp';
 import Regist from './regist/register';
 import Edit from './regist/edit';
-import Week from './display/week';
 import Div from './display/div';
-import QuestMenu from './quest/questmain';
 import Serch from './serch/taskSerch';
 
 
@@ -19,9 +17,7 @@ const routesBasic = createBrowserRouter([
   { path:'/infom',element:<TaskMenu/>},
   { path: '/register',element:<Regist/>},
   { path: '/edit/:id',element:<Edit/>},
-  { path: '/week',element:<Week/>},
   { path: '/div',element:<Div/>},
-  { path: '/quest',element:<QuestMenu/>},
   { path: '/serch',element:<Serch/>},
   { path: '*', element: <div>404: Page Not Found</div> }
 ])

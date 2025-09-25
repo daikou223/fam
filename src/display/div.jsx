@@ -28,14 +28,14 @@ function Week(){
         }
 
     }                
-        function plt(){
+    function plt(){
         setButtonName("保存中");
         const printingButton = document.getElementById("print");
         printingButton.disabled = true;
-window.print();
+        window.print();
         setButtonName("印刷");
         printingButton.disabled = false;
-        }
+    }
     return(
         <>
             <Menubar/>
@@ -95,7 +95,6 @@ function OnlyTask(props){
     useEffect(() => {
         const fetchTask = async () => {
             let task_ = await TaskUtil.getTaskWithConditions(user_id, date);
-            task_.sort((task1,task2)=>timeSubstruct(task1.goOutTime,task2.goHomeTime).toSeconds() > 0)
             setTask(task_);
         };
         fetchTask();
