@@ -2,11 +2,9 @@ import React from 'react';
 
 export default function Modal(props) {
   // 変数******************************************
-  const message = props.message ?? ""; 
-  const selection = props.selection ?? [];
   const onSelect = props.onSelect;
   const modalDisp = props.modalDisp;
-
+  const modalData = props.modalData;
   // スタイル
   const styles = {
     backgroundBrocker:{
@@ -51,11 +49,11 @@ export default function Modal(props) {
     <div style = {modalDisp ? styles.backgroundBrocker:styles.nonModalStyle}>
       <div style={modalDisp ? styles.modalStyle: styles.nonModalStyle}>
         <div style={{ marginBottom: "10px", textAlign: "center" }}>
-          {message}
+          {modalData.message}
         </div>
-        {selection.map((select, idx) => (
-          <button key={idx} style={styles.buttonStyle} onClick = {()=>onSelect(idx)}>
-            {select}
+        {modalData.selection.map((select, idx) => (
+          <button key={idx} style={{...styles.buttonStyle,backgroundColor:select.color}} onClick = {()=>onSelect(idx)}>
+            {select.selectMessage}
           </button>
         ))}
       </div>

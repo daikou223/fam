@@ -11,6 +11,8 @@ import {update,dltApi,postTask} from "./../api/TaskApi"
 import Time,{StoTime} from "./../class/Time"
 import * as dateUtil from "./../class/day"
 import dayjs from "dayjs"
+import { ModalSelections,select } from '../modal/modalClass';
+import { COLORS } from '../design/constant';
 
 //新規予定を登録するようのページ
 function Regist(){
@@ -21,8 +23,7 @@ function Regist(){
     const [isHome,setIsHome] = useState(false);
     const [isAllDay,setAllDay] = useState(false);
     const [bulkDates,setBulkDates] = useState([]);
-    const [message,setMessage] = useState("このメッセージが見えたらおかしいよ.見えたらスクショして管理者に送って~");
-    const [selection,setSelection] = useState(["選択１","選択2","選択３"]);
+    const [modalData,setModaldata] = useState(new ModalSelections("",[]))
     const [modalDisp,setModalDisp] = useState(false);
     const [modalResolve, setModalResolve] = useState(null);
     const navigate = useNavigate();
@@ -34,11 +35,8 @@ function Regist(){
     const taskMemoRef = useRef("");
 
   
-    async function showModal(massage,option){
-        setMessage(massage)
-        setSelection(option)
+    async function showModal(){
         setModalDisp(true)
-        
         return new Promise((resolve) => {
             setModalResolve(() => resolve);
         });
@@ -48,11 +46,13 @@ function Regist(){
       let flag = 0;
       //入力バリデーション
       if(taskNameRef.current.value == "" || (!(isAllDay) && (taskStartRef.current.value == "" || taskEndRef.current.value == "")) || (!(isHome) && taskGotoRef.current.value == "")){
-        await showModal('未入力項目があります',["確認"])
+        setModaldata(new ModalSelections('未入力項目があります',[new select("確認")]))
+        await showModal()
         flag = 1
       }
       if(date.isBefore(dateUtil.getToday()) && !(isBulk) && flag == 0){
-        flag = await showModal('日付が本日かそれ以前ですが\nよろしいですか？',["はい","キャンセル"]);
+        setModaldata(new ModalSelections('日付が本日かそれ以前ですが\nよろしいですか？',[new select("はい",COLORS.ok),new select("キャンセル")]))
+        flag = await showModal();
       } 
       if(isBulk && flag == 0){
         let includeBeforeDateFlag = false;
@@ -62,7 +62,8 @@ function Regist(){
           }
         }
         if(includeBeforeDateFlag){
-          flag = await showModal('日付が本日かそれ以前が含まれていますが\nよろしいですか？',["はい","キャンセル"]);
+          setModaldata(new ModalSelections('日付が本日かそれ以前ですが\nよろしいですか？',[new select("はい",COLORS.ok),new select("キャンセル")]))
+          flag = await showModal();
         }
       }
       if(flag == 0){
@@ -75,7 +76,8 @@ function Regist(){
           const collapseTasks = await getCollapse(date,isAllDay ? new Time(0,0,0) :StoTime(taskStartRef.current.value),isAllDay ? new Time(23,59,0) :StoTime(taskEndRef.current.value),id)
           for (const collapseId of collapseTasks) {
             const collapseDetail = await getTaskDetails(collapseId);
-            const result = await showModal(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, [`「${collapseDetail.name}」を削除`,`このタスクを登録しない`,`両方保存する(非推奨)`]);
+            setModaldata(new ModalSelections(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`,[new select(`「${collapseDetail.name}」を削除`,COLORS.delete),new select(`このタスクを登録しない`,COLORS.cancel),new select(`両方保存する(非推奨)`)]))
+            const result = await showModal();
             switch(result){
                 case 0:
                     dltList.push(collapseId)
@@ -100,7 +102,7 @@ function Regist(){
             );
             for (const collapseId of collapseTasks) {
             const collapseDetail = await getTaskDetails(collapseId);
-            const result = await showModal(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, [`「${collapseDetail.name}」を削除`,`このタスクを登録しない`,`両方保存する(非推奨)`]);
+            const result = await showModal();
             switch(result){
                 case 0:
                     dltList.push(collapseId)
@@ -167,9 +169,8 @@ function Regist(){
         <>
         <Menubar/>
         <Modal 
-          message = {message} 
-          selection = {selection} 
           modalDisp = {modalDisp}
+          modalData = {modalData}
           onSelect={(idx) => {
               if (modalResolve) {
                   modalResolve(idx); // ユーザーの選択結果を返す

@@ -11,6 +11,8 @@ import Modal from "./../modal/modal"
 import * as TimeUtil from "./../class/Time"
 import {update,dltApi} from "./../api/TaskApi"
 import * as TaskUtil from "./../class/TaskClass"
+import { ModalSelections,select } from '../modal/modalClass';
+import { COLORS } from '../design/constant';
 
 function Edit(){
     //変数************************************
@@ -28,6 +30,7 @@ function Edit(){
     const [sameTask,setSameTask] = useState([]);
     const [message,setMessage] = useState("このメッセージが見えたらおかしいよ.見えたらスクショして管理者に送って~");
     const [selection,setSelection] = useState(["選択１","選択2","選択３"]);
+    const [modalData,setModaldata] = useState(new ModalSelections("",[]))
     const [modalDisp,setModalDisp] = useState(false);
     const [modalResolve, setModalResolve] = useState(null);
     const putList = useRef([])
@@ -95,9 +98,12 @@ function Edit(){
         const taskDetail = await getTaskDetails(id)
         const sameTaskid = await getSameTask(taskDetail.name,taskDetail.date)
         //今更新しようとしているものも含まれる
-        let sameIdFlag = false
+        let sameIdFlag = 1
         if(sameTaskid.length >= 2){
-            sameIdFlag = await showModal("今後同名のタスクが存在しますが、同様に更新しますか？",["はい","更新しない"])
+            setModaldata(new ModalSelections(
+                "今後同名のタスクが存在しますが、同様に更新しますか？", 
+                [new select(`すべて更新`,COLORS.ok),new select(`このタスクのみ更新する`)]))
+            sameIdFlag = await showModal()
         }
         const targetIds = sameIdFlag == 0 ? sameTaskid:[id]
         putList.current = targetIds
@@ -115,12 +121,15 @@ function Edit(){
     }
     //各タスクに応じて、衝突タスクを探す
     async function loopcollapseTask(targetid){
-        const targetDetail = getTaskDetails(targetid)
+        const targetDetail = await getTaskDetails(targetid)
         const collapseTasks = await getCollapse(targetDetail.date,TimeUtil.StoTime(start),TimeUtil.StoTime(end),targetDetail.user_id)
+        console.log(targetDetail.date,collapseTasks)
         for (const collapseId of collapseTasks) {
             if(collapseId != targetid){
-                const collapseDetail = getTaskDetails(collapseId);
-                const result = await showModal(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, [`「${collapseDetail.name}」を削除`,`このタスクを更新しない`,`両方保存する(非推奨)`]);
+                const collapseDetail = await getTaskDetails(collapseId);
+                setModaldata(new ModalSelections(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, 
+                [new select(`「${collapseDetail.name}」を削除`,COLORS.delete),new select(`このタスクを登録しない`,COLORS.cancel),new select(`両方保存する(非推奨)`)]))
+                const result = await showModal()
                 switch(result){
                     case 0:
                         dltList.current.push(collapseId)
@@ -135,11 +144,8 @@ function Edit(){
             }
         }
     }
-    async function showModal(massage,option){
-        setMessage(massage)
-        setSelection(option)
+    async function showModal(){
         setModalDisp(true)
-        
         return new Promise((resolve) => {
             setModalResolve(() => resolve);
         });
@@ -156,7 +162,8 @@ function Edit(){
         //今削除しようとしているものも含まれる
         let sameIdFlag = false
         if(sameTaskid.length >= 2){
-            sameIdFlag = await showModal("今後同名のタスクが存在しますが、同様に削除しますか？",["削除する","しない"])
+            setModaldata(new ModalSelections('今後同名のタスクが存在しますが、同様に削除しますか？',[new select("すべて削除する",COLORS.delete),new select("このタスクのみ削除")]))
+            sameIdFlag = await showModal()
         }
         if(sameIdFlag == 0){
             await dltApi(sameTaskid)
@@ -179,9 +186,8 @@ function Edit(){
             <>
             <Menubar/>
             <Modal 
-            message = {message} 
-            selection = {selection} 
             modalDisp = {modalDisp}
+            modalData = {modalData}
             onSelect={(idx) => {
                 if (modalResolve) {
                     modalResolve(idx); // ユーザーの選択結果を返す
