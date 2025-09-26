@@ -6,6 +6,8 @@ import Menubar from "./menubar/menubar"
 import Time,{timeSubstruct,timeAdd,StoTime,secondToTime} from "./class/Time"
 import * as dateUtil from "./class/day"
 import * as taskUtil from "./class/TaskClass"
+import ErrorIcon from './icon/error';
+
 
 //メインページ
 function TaskMenu(){
@@ -98,8 +100,8 @@ function TaskMenu(){
               ))}
           </div>
           ))}
-          {localStorage.getItem("debug") && <p className = "cousion" style = {{ whiteSpace: "pre-line" }}> デバッグモードです。</p>}
-          <p className = {cousionClass} style = {{ whiteSpace: "pre-line" }}> { isLoading ? cousion:"" }</p>
+          {localStorage.getItem("debug") && <div className = "cousion" style = {{ whiteSpace: "pre-line",display:"flex"}}> <ErrorIcon size = {22}/>デバッグモードです。</div>}
+          <p className = {cousionClass} style = {{ whiteSpace: "pre-line" }}> { isLoading ? <div style = {{ whiteSpace: "pre-line",display:"flex"}}><ErrorIcon size = {22}/>{cousion}</div>:"" }</p>
           </div></div>)
         }}
 
