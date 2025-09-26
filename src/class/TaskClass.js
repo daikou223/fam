@@ -113,11 +113,33 @@ export async function getTaskOnlyId(){
 
 export async function getTask(mode = ""){
     const FullTask = await initialized(mode)
+    if(FullTask){
+        FullTask.tasks.sort((task1,task2)=>{
+            if(task1.date.isAfter(task2.date)){
+                return 1
+            }else if(task1.date.isBefore(task2.date)){
+                return -1
+            }else{
+                return task1.start.toSeconds()-task2.start.toSeconds()
+            }
+        })
+    }
     return FullTask?.tasks
 }
 
 export async function getTaskWithConditions(user,date){
     const FullTask = await initialized()
+    if(FullTask){
+        FullTask.tasks.sort((task1,task2)=>{
+            if(task1.date.isAfter(task2.date)){
+                return 1
+            }else if(task1.date.isBefore(task2.date)){
+                return -1
+            }else{
+                return task1.start.toSeconds()-task2.start.toSeconds()
+            }
+        })
+    }
     return FullTask.tasks.filter((task)=>{
         return task.user_id === user && task.date.isSame(date,"day") && task.isHome == 1
     })

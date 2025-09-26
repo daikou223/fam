@@ -27,19 +27,13 @@ function TaskMenu(){
   //画面に入ってきた時、キャッシュを更新
   useEffect(() => {(async()=>{
     //localStrageに入ってるなら取りえずそれを出力
-    if(localStorage.getItem("task")){
-      tmpdataDisp()
-    }
-    if(!isNet){
-      isNet = true
-      const res =  await taskUtil.getTask("force")
-      setIsLoading(false)
-      setCousion("")
-      setCousionClass("")
-      isNet = false
-    }
+    const res =  await taskUtil.getTask("force")
+    setIsLoading(false)
+    setCousion("")
+    setCousionClass("")
     })()
   }, []);
+  //ここは日付変更時にスムーズにできるようにawait化は不可
   useEffect(()=>{
     tmpdataDisp()
   },[date,isLoading])
