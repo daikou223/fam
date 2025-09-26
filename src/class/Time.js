@@ -57,7 +57,7 @@ export function StoTime(TimeString){
 export function timeCollapse(start1,end1,start2,end2){
     const deffs1e2 = timeSubstruct(end1,start2).toSeconds() 
     const deffs2e1 = timeSubstruct(end2,start1).toSeconds() 
-    return deffs1e2 * deffs2e1 >= 0
+    return deffs1e2 * deffs2e1 > 0
 }
 
 export function secondToTime(second){
