@@ -123,12 +123,11 @@ function Edit(){
     async function loopcollapseTask(targetid){
         const targetDetail = await getTaskDetails(targetid)
         const collapseTasks = await getCollapse(targetDetail.date,TimeUtil.StoTime(start),TimeUtil.StoTime(end),targetDetail.user_id)
-        console.log(targetDetail.date,collapseTasks)
         for (const collapseId of collapseTasks) {
             if(collapseId != targetid){
                 const collapseDetail = await getTaskDetails(collapseId);
                 setModaldata(new ModalSelections(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, 
-                [new select(`「${collapseDetail.name}」を削除`,COLORS.delete),new select(`このタスクを登録しない`,COLORS.cancel),new select(`両方保存する(非推奨)`)]))
+                [new select(`「${collapseDetail.name}」を削除`,COLORS.red),new select(`このタスクを登録しない`,COLORS.cancel),new select(`両方保存する(非推奨)`)]))
                 const result = await showModal()
                 switch(result){
                     case 0:
@@ -162,7 +161,7 @@ function Edit(){
         //今削除しようとしているものも含まれる
         let sameIdFlag = false
         if(sameTaskid.length >= 2){
-            setModaldata(new ModalSelections('今後同名のタスクが存在しますが、同様に削除しますか？',[new select("すべて削除する",COLORS.delete),new select("このタスクのみ削除")]))
+            setModaldata(new ModalSelections('今後同名のタスクが存在しますが、同様に削除しますか？',[new select("すべて削除する",COLORS.red),new select("このタスクのみ削除")]))
             sameIdFlag = await showModal()
         }
         if(sameIdFlag == 0){

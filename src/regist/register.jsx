@@ -76,7 +76,7 @@ function Regist(){
           const collapseTasks = await getCollapse(date,isAllDay ? new Time(0,0,0) :StoTime(taskStartRef.current.value),isAllDay ? new Time(23,59,0) :StoTime(taskEndRef.current.value),id)
           for (const collapseId of collapseTasks) {
             const collapseDetail = await getTaskDetails(collapseId);
-            setModaldata(new ModalSelections(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`,[new select(`「${collapseDetail.name}」を削除`,COLORS.delete),new select(`このタスクを登録しない`,COLORS.cancel),new select(`両方保存する(非推奨)`)]))
+            setModaldata(new ModalSelections(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`,[new select(`「${collapseDetail.name}」を削除`,COLORS.red),new select(`このタスクを登録しない`,COLORS.cancel),new select(`両方保存する(非推奨)`)]))
             const result = await showModal();
             switch(result){
                 case 0:
