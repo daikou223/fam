@@ -1,0 +1,28 @@
+.buttonWarpper{
+    margin-top:70px;
+}
+.broButton{
+    width:50px;
+    height:35px;
+}
+table{
+    border-collapse:collapse;
+}
+td{
+    width:10%;
+    border:1px solid black;
+    height:25px
+}
+.memo{
+    width:50%;
+}
+@media screen{
+    .tableWarpper{
+         display:none
+    }
+}
+@media print{
+    .buttonWarpper{
+        display:none
+    }
+}

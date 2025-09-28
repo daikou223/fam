@@ -16,21 +16,22 @@ export default function Menubar(props){
     const [menuIsOpen,setMenuIsOpen] = useState(false);
     const navigate = useNavigate();
     const isActive = !(props.isActive) ?? true
-    const setCousion = props.setCousion ?? 
-    function(){}
+    const setCousion = props.setCousion ??     function(){}
+    const id = localStorage.getItem("id")
     const menuTable = [
         new menuItem("今日の予定","/infom"),
         new menuItem("予定登録","/register"),
         new menuItem("タスク検索","/serch"),
-        new menuItem("印刷用メニュー","/div"),
+        new menuItem("印刷用メニュー","/div")
     ]
+    if(id == 2){
+      menuTable.push(new menuItem("仕事登録画面","/bro"))
+    }
     //関数定義************************************
     const menuOpen = ()=>{
-      console.log("open")
       setMenuIsOpen(true)
     }
     const menuClose = ()=>{
-      console.log("close")
       setMenuIsOpen(false)
     }
     const screenTransition = (url)=>{
