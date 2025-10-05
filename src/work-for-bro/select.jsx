@@ -239,7 +239,7 @@ function OneDay(props){
     }
     return(
         <div style = {{display:"flex"}}>
-            <table>
+            <table className="broTable">
             <div style = {{marginRight: "15px"}}>
             {dayUtil.getOnlyDate(select.date)}
             </div>
