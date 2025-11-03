@@ -29,7 +29,6 @@ function Week(){
 
     }                
     function plt(){
-        setButtonName("保存中");
         const printingButton = document.getElementById("print");
         printingButton.disabled = true;
         window.print();

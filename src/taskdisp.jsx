@@ -87,7 +87,9 @@ function TaskMenu(){
           <div translate="no">
             {<Menubar isActive = {isLoading} setCousion = {setCousion}/>}
           <div className = "center">
-            <button onClick = {()=>{setDate((prev)=>dateUtil.getYestaday(prev))}} className = "midiambutton">&lt;</button><a class = "midiamletter">{dateUtil.dateFullDisplay(date)}({dateUtil.getDDDay(date)})</a> <button onClick = {()=>{setDate((prev)=>dateUtil.getTomorrow(prev))}} className = "midiambutton">&gt;</button>
+            <button onClick = {()=>{setDate((prev)=>dateUtil.getYestaday(prev))}} className = "midiambutton">&lt;</button>
+            <a class = "midiamletter">{dateUtil.dateFullDisplay(date)}({dateUtil.getDDDay(date)})</a>
+            <button onClick = {()=>{setDate((prev)=>dateUtil.getTomorrow(prev))}} className = "midiambutton">&gt;</button>
             </div>
             <div>
               {[0, 1, 2, 3].map((i) => (
