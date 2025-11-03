@@ -1,5 +1,5 @@
 import * as TimeUtil from "./Time"
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import * as ApiUtil from "./../api/TaskApi"
 import * as dayUtil from "./day"
 
@@ -125,6 +125,19 @@ export async function getTask(mode = ""){
     }
     return FullTask?.tasks
 }
+
+export async function getMonthTask(date = dayjs()){
+    const fullTask = await getTask()
+    const startDate = dayUtil.getFirstday(date)
+    const endDate = dayUtil.getFinalday(date)
+    return fullTask.filter((t) => {
+        const isAfter = t.date.isAfter(startDate) || t.date.isSame(startDate)
+        const isBefore = t.date.isBefore(endDate) || t.date.isSame(endDate)
+        return isAfter && isBefore
+    })
+}
+
+
 
 export async function getTaskWithConditions(user,date){
     const FullTask = await initialized()

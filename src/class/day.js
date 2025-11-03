@@ -3,12 +3,12 @@ import dayjs from 'dayjs';
 
 //一日前のdayjsオブジェクトを返す
 function getYestaday(day){
-    return day.add(-1,"day")
+    return dayjs(day).add(-1,"day")
 };
 
 //一日前のdayjsオブジェクトを返す
 function getTomorrow(day){
-    return day.add(1,"day")
+    return dayjs(day).add(1,"day")
 };
 
 //今日の日付を取得

@@ -10,6 +10,7 @@ import Edit from './regist/edit';
 import Div from './display/div';
 import Serch from './serch/taskSerch';
 import Select from './work-for-bro/select';
+import PrintDisplay from './display/printDisplay';
 
 
 //ルート定義部分
@@ -21,6 +22,7 @@ const routesBasic = createBrowserRouter([
   { path: '/div',element:<Div/>},
   { path: '/serch',element:<Serch/>},
   { path: '/bro',element:<Select/>},
+  { path: '/print',element:<PrintDisplay/>},
   { path: '*', element: <div>404: Page Not Found</div> }
 ])
 const root = ReactDOM.createRoot(document.getElementById('root'));
