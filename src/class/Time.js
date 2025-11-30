@@ -21,12 +21,13 @@ export default class Time{
         if(this.hour < 0){
             return "00:00"
         }
-        else if(this.hour > 23){
-            return "24:00"
+        else if(this.hour >= 24){
+            return `翌${String(this.hour-24).padStart(2,'0')}:${String(this.minute).padStart(2,'0')}`
         }
         return `${String(this.hour).padStart(2,'0')}:${String(this.minute).padStart(2,'0')}`
     }
 }
+
 export function timeSubstruct(ourTime,otherTime){
         if(ourTime.toSeconds() === (new Time(0,0,0)).toSeconds()){
             return new Time(0,0,0);
@@ -37,6 +38,7 @@ export function timeSubstruct(ourTime,otherTime){
         const second = diffsec % 60;
         return new Time(hour,minute,second)
 }
+
 export function timeAdd(ourTime,otherTime){
     if(ourTime.toSeconds() === (new Time(23,59,59)).toSeconds() || ourTime.toSeconds() === (new Time(23,59,0)).toSeconds()){
         return new Time(23,59,59);
@@ -47,6 +49,7 @@ export function timeAdd(ourTime,otherTime){
     const second = addsec % 60;
     return new Time(hour,minute,second)
 }
+
 export function StoTime(TimeString){
     const timelist = TimeString.split(":");
     const hour = timelist?.[0] ?? 0
@@ -54,6 +57,7 @@ export function StoTime(TimeString){
     const second = timelist?.[2] ?? 0
     return new Time(hour,minute,second);
 }
+
 export function timeCollapse(start1,end1,start2,end2){
     const deffs1e2 = timeSubstruct(end1,start2).toSeconds() 
     const deffs2e1 = timeSubstruct(end2,start1).toSeconds() 
