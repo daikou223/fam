@@ -1,11 +1,13 @@
 import React,{useState,useEffect} from "react";
+import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
 import axios from "axios";
 import {update,dltApi,postTask} from "./../api/TaskApi"
 import * as dayUtil from "../class/day"
 import Menubar from "../menubar/menubar"
 import "./forselect.css"
 import { COLORS } from "../design/constant";
-import dayjs from "dayjs";
+import Modal from "./../modal/modal"
+import { ModalSelections,select } from '../modal/modalClass';
 
 //人参とごぼうできんぴら
 class Date{
@@ -172,22 +174,37 @@ function inisyal(){
 function Select(){
     //変数定義******************************************************
     const [selected,setSelected] = useState(inisyal())
-    const[buttonName,setButtonName] = useState("印刷");
+    const[buttonName,setButtonName] = useState("保存");
+    const navigate = useNavigate();
+    const [modalData,setModaldata] = useState(new ModalSelections("",[]))
+    const [modalDisp,setModalDisp] = useState(false);
     //スタイル定義******************************************
     //関数定義***************************************************
     async function plt(){
         const printingButton = document.getElementById("print");
         printingButton.disabled = true;
-        setButtonName("保存中");
         const paramses = []
         selected.forEach((aSelect)=>aSelect.addParam(paramses))
-        await postTask(paramses)
-        window.print();
-        setButtonName("印刷");
+        if(paramses.length == 0){
+            setModaldata(new ModalSelections(`なにも選択されていません`, 
+            [new select(`OK`)]))
+            setModalDisp(true);
+        }else{
+            setButtonName("保存中");
+            await postTask(paramses)
+            setButtonName("保存");
+            navigate("/infom")
+        }
         printingButton.disabled = false;
     }
     return(
         <div>
+            <Modal 
+            modalDisp = {modalDisp}
+            modalData = {modalData}
+            onSelect={(idx) => {
+                setModalDisp(false); // モーダルを閉じる
+            }}/>
             <Menubar/>
             <div className = "buttonWarpper">
             {selected.map((aSelect)=><OneDay select = {aSelect} setSelected = {setSelected}/>)}
