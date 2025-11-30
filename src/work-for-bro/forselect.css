@@ -5,10 +5,10 @@
     width:50px;
     height:35px;
 }
-table{
+.broTable{
     border-collapse:collapse;
 }
-td{
+.broTable > td{
     width:10%;
     border:1px solid black;
     height:25px

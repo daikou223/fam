@@ -6,27 +6,15 @@ import * as dayUtil from "../class/day"
 import Menubar from "../menubar/menubar"
 import "./forselect.css"
 import { COLORS } from "../design/constant";
+
 import Modal from "./../modal/modal"
 import { ModalSelections,select } from '../modal/modalClass';
 
-//人参とごぼうできんぴら
 class Date{
-    constructor(date,shift = 7){
+    constructor(date,shift = 0){
         this.date = date
         this.shift = shift
         this.id = date.date()-1
-    }
-    dayColor(){
-        if(this.date.day() == 0){
-            return COLORS.red
-        }else if(this.date.day() == 6){
-            return COLORS.blue
-        }else{
-            return COLORS.default
-        }
-    }
-    dayMemo(){
-        return this.date.day() == 0?"お昼忘れずに":"."
     }
     addParam(paramses){
         switch(this.shift){
@@ -98,66 +86,6 @@ class Date{
                 break
         }
     }
-    createTableData(){
-        switch(this.shift){
-            case(0):
-                return(<tr>
-                    <td style = {{backgroundColor:this.dayColor()}}>{dayUtil.getOnlyDate(this.date)}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    </tr>)
-            case(1):
-                return(<tr>
-                    <td style = {{backgroundColor:this.dayColor()}}>{dayUtil.getOnlyDate(this.date)}</td>
-                    <td>5:15</td>
-                    <td>6:30</td>
-                    <td>15:30</td>
-                    <td>16:45</td>
-                    <td>{this.dayMemo()}</td>
-                    </tr>)
-            case(2):
-            case(3):
-                return(<tr>
-                    <td style = {{backgroundColor:this.dayColor()}}>{dayUtil.getOnlyDate(this.date)}</td>
-                    <td>5:45</td>
-                    <td>7:00</td>
-                    <td>16:00</td>
-                    <td>17:15</td>
-                    <td>{this.dayMemo()}</td>
-                    </tr>)
-            case(4):
-                return(<tr>
-                    <td style = {{backgroundColor:this.dayColor()}}>{dayUtil.getOnlyDate(this.date)}</td>
-                    <td>9:45</td>
-                    <td>11:00</td>
-                    <td>20:00</td>
-                    <td>21:15</td>
-                    <td>{this.dayMemo()}</td>
-                    </tr>)
-            case(5):
-            case(6):
-                return(<tr>
-                    <td style = {{backgroundColor:this.dayColor()}}>{dayUtil.getOnlyDate(this.date)}</td>
-                    <td>10:45</td>
-                    <td>12:00</td>
-                    <td>21:00</td>
-                    <td>22:15</td>
-                    <td>{this.dayMemo()}</td>
-                    </tr>) 
-            case(7):
-                return(<tr>
-                    <td style = {{backgroundColor:this.dayColor()}}>{dayUtil.getOnlyDate(this.date)}</td>
-                    <td>19:15</td>
-                    <td>20:30</td>
-                    <td>翌7:00</td>
-                    <td>翌8:15</td>
-                    <td></td>
-                    </tr>) 
-        }
-    }
 }
 
 function inisyal(){
@@ -177,7 +105,7 @@ function Select(){
     const[buttonName,setButtonName] = useState("保存");
     const navigate = useNavigate();
     const [modalData,setModaldata] = useState(new ModalSelections("",[]))
-    const [modalDisp,setModalDisp] = useState(false);
+    const [modalDisp,setModalDisp] = useState(false)
     //スタイル定義******************************************
     //関数定義***************************************************
     async function plt(){
@@ -209,14 +137,6 @@ function Select(){
             <div className = "buttonWarpper">
             {selected.map((aSelect)=><OneDay select = {aSelect} setSelected = {setSelected}/>)}
             <button  id = "print" onClick={()=>{plt()}}>{buttonName}</button>  
-            </div>
-            <div className = "tableWarpper">
-            <table>
-                <tr><th className = "day">日</th><th>出発</th><th>開始</th><th>終了</th><th>帰宅</th><th className="memo">メモ</th></tr>
-                {selected.map((aSelect)=>{
-                    return aSelect.createTableData()
-                })}
-            </table>
             </div>
         </div>
     )
@@ -256,7 +176,7 @@ function OneDay(props){
     }
     return(
         <div style = {{display:"flex"}}>
-            <table>
+            <table className="broTable">
             <div style = {{marginRight: "15px"}}>
             {dayUtil.getOnlyDate(select.date)}
             </div>
