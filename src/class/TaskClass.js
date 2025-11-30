@@ -73,8 +73,7 @@ class task{
         this.goHomeTime = TimeUtil.secondToTime(this.end.toSeconds()+this.forgoto.toSeconds()) 
     }
 }
-/* date:"2025-03-06T00:00:00.000Z"end:"23:59:00"forgoto:"01:15:00"isHome:1
-memo:""start:"20:30:00"task_id:811taskname:"夜勤仕事"user_id:2 */
+
 export async function getSameTask(name,date){
     const fullTask = await initialized()
     const SameTask_ = []
@@ -136,8 +135,6 @@ export async function getMonthTask(date = dayjs()){
         return isAfter && isBefore
     })
 }
-
-
 
 export async function getTaskWithConditions(user,date){
     const FullTask = await initialized()

@@ -1,5 +1,4 @@
 import React,{useEffect,useState} from 'react';
-import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
 import styles from "./style.css"
 import Menubar from "./menubar/menubar"
@@ -13,23 +12,20 @@ import ErrorIcon from './icon/error';
 function TaskMenu(){
   //変数群
   const GOOUT = 1
-  const INHOME = 0
   const [date,setDate] = useState(dateUtil.getToday());
   const [tasks,setTasks] = useState([[],[],[],[]]);
-  const [homeTime,setHomeTime] = useState([[new Time(24,0,0),new Time(-1,0,0)],
-                                            [new Time(24,0,0),new Time(-1,0,0)],
-                                            [new Time(24,0,0),new Time(-1,0,0)],
-                                            [new Time(24,0,0),new Time(-1,0,0)]])
+  const [homeTime,setHomeTime] = useState([[new Time(48,0,0),new Time(-1,0,0)],
+                                            [new Time(48,0,0),new Time(-1,0,0)],
+                                            [new Time(48,0,0),new Time(-1,0,0)],
+                                            [new Time(48,0,0),new Time(-1,0,0)]])
   const [cousion,setCousion] = useState("読み込み中のため、前回読み込んだ情報を表示しています");
   const [cousionClass,setCousionClass] = useState("cousion");
   const [isLoading,setIsLoading] = useState(true);
   const [IsData,setIsData] = useState(false);
-  let isNet = false
-  const MAXTIME = 24*3600-1
+  const MAXTIME = 48*3600-1
   //画面に入ってきた時、キャッシュを更新
   useEffect(() => {(async()=>{
-    //localStrageに入ってるなら取りえずそれを出力
-    const res =  await taskUtil.getTask("force")
+    await taskUtil.getTask("force")
     setIsLoading(false)
     setCousion("")
     setCousionClass("")
@@ -39,18 +35,20 @@ function TaskMenu(){
   useEffect(()=>{
     tmpdataDisp()
   },[date,isLoading])
+
   function tmpdataDisp(){
     //taskリストのフォーマット化(dayjsがうまく行かないはず)
     if(localStorage.getItem("task")){
       disp(taskUtil.formater(JSON.parse(localStorage.getItem("task"))).tasks)
     }
   }
+
   function disp(Data){
     let parsonTask = [[],[],[],[]]
-    let hometime_ = [[new Time(24,0,0),new Time(-1,0,0)],
-                    [new Time(24,0,0),new Time(-1,0,0)],
-                    [new Time(24,0,0),new Time(-1,0,0)],
-                    [new Time(24,0,0),new Time(-1,0,0)]];
+    let hometime_ = [[new Time(48,0,0),new Time(-1,0,0)],
+                    [new Time(48,0,0),new Time(-1,0,0)],
+                    [new Time(48,0,0),new Time(-1,0,0)],
+                    [new Time(48,0,0),new Time(-1,0,0)]];
     //人ごとに分離
     for(let i = 0; i < Data.length; i++){
       if(Data[i].date.isSame(date,"day")){
@@ -60,7 +58,7 @@ function TaskMenu(){
     for(let i = 0; i < 4; i++){
       //表示を早い順に
       parsonTask[i].sort((task1,task2)=>task1.start.toSeconds()-task2.start.toSeconds())
-      let goOutTime =  new Time(24,0,0).toSeconds()-1
+      let goOutTime =  new Time(48,0,0).toSeconds()-1
       let goHomeTime = 0
       //帰宅時間を計算
       for(let j = 0; j < parsonTask[i].length; j++){
@@ -70,9 +68,11 @@ function TaskMenu(){
         goHomeTime = Math.max(goHomeTime,parsonTask[i][j].end.toSeconds()+parsonTask[i][j].forgoto.toSeconds())
         }
       }
+      console.log(parsonTask[i])
       hometime_[i][0] = secondToTime(goOutTime)
       hometime_[i][1] = secondToTime(goHomeTime)
     }
+    console.log(hometime_)
     setHomeTime(hometime_)
     setTasks(parsonTask)
     setIsData(true)
