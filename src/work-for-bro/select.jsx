@@ -71,16 +71,7 @@ class Date{
                     "forgoto":"01:15:00",
                     "date":dayUtil.dateToString(this.date),
                     "start":"20:30:00",
-                    "end":"23:59:00",
-                    "memo":"",
-                    "isHome":1});
-                paramses.push({
-                    "user_id":2,
-                    "taskname":"夜勤仕事",
-                    "forgoto":"01:15:00",
-                    "date":dayUtil.dateToString(dayUtil.getTomorrow(this.date)),
-                    "start":"00:00:00",
-                    "end":"07:00:00",
+                    "end":"31:00:00",
                     "memo":"",
                     "isHome":1});
                 break
