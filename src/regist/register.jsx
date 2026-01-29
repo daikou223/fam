@@ -227,7 +227,7 @@ function Calender(props){
     }
     setBulkDates(bulkDates_)
   }
-  //曜日をクリック時に一斉二選択
+  //曜日をクリック時に一斉に選択
   function clarenderDay(day){
     let bulkDates_ = [...bulkDates];
     let firstIsInclude = null
@@ -249,10 +249,17 @@ function Calender(props){
   }
   //月の移動を実装
   function MoveMonth(mode){
+    console.log(mode)
     setDispDay((prev)=> prev.add(mode,"month"))
-    setFirstDay((prev)=> prev.add(mode,"month"))
-    setLastDay((prev)=> prev.add(mode,"month"))
   }
+  //月の移動実装に合わせてFirstDay,lastDayを変更
+  useEffect(()=>{
+    console.log(dispDay)
+    console.log(dateUtil.getFirstday(dispDay))
+    console.log(dateUtil.getFinalday(dispDay))
+    setFirstDay(dateUtil.getFirstday(dispDay))
+    setLastDay(dateUtil.getFinalday(dispDay))
+  },[dispDay])
   //レンダリング関数*************************
   //列を作成する
   function createRow(){
@@ -283,7 +290,7 @@ function Calender(props){
       }
     }
     setCells(cells_)
-  },[bulkDates,dispDay])
+  },[bulkDates,lastDay])
   //画面構成**********************
   return(
     <div>
