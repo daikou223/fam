@@ -24,7 +24,7 @@ export default function Menubar(props){
         new menuItem("タスク検索","/serch"),
         new menuItem("印刷用メニュー","/print")
     ]
-    if(id == 2){
+    if(id === 2){
       menuTable.push(new menuItem("仕事登録画面","/bro"))
     }
     //関数定義************************************

@@ -62,10 +62,10 @@ export default function PrintDisplay(){
         setDispDay(dayUtil.setDate(year,month-1,1) )
     }
     function dCss(d){
-        if(d.format("d") == 0){
+        if(d.format("d") === 0){
             return styles.sunday
         }
-        else if(d.format("d") == 6){
+        else if(d.format("d") === 6){
             return styles.staday
         }
         return styles.tableCell
@@ -74,8 +74,8 @@ export default function PrintDisplay(){
         const load = async() =>{
             const _days = []
             const res = await TaskUtil.getMonthTask(dispDay)
-            setBroTask(res.filter((t)=>t.user_id == 2))
-            setMyTask(res.filter((t)=>t.user_id == 1))
+            setBroTask(res.filter((t)=>t.user_id === 2))
+            setMyTask(res.filter((t)=>t.user_id === 1))
             const startDay = dayUtil.getFirstday(dispDay)
             const endDay = dayUtil.getFinalday(dispDay)
             for(let targetDay = startDay;

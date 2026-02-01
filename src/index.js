@@ -60,7 +60,7 @@ function Login(){
       { headers: { 'Content-Type': 'application/json' } }
     )
     .then(response => {
-      if(response.data == true){
+      if(response.data === true){
         //passが一致した時ローカルストレージに保存し，画面遷移
         localStorage.setItem('id',user)
         navigate(`/infom`);

@@ -66,7 +66,7 @@ export async function dltApi(ids){
 }
 //タスクの取得
 export async function getTask(mode = ""){
-    if(localStorage.getItem("task") && mode == ""){
+    if(localStorage.getItem("task") && mode === ""){
         let result = JSON.parse(localStorage.getItem("task"));
         return result
     }
