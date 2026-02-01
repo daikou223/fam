@@ -19,12 +19,12 @@ export default class Time{
     }
     disp(){
         if(this.hour < 0){
-            return "00:00"
+            return "\u00A0\u00A00:00"
         }
         else if(this.hour >= 24){
             return `翌${String(this.hour-24).padStart(2,'0')}:${String(this.minute).padStart(2,'0')}`
         }
-        return `${String(this.hour).padStart(2,'0')}:${String(this.minute).padStart(2,'0')}`
+        return `${String(this.hour).padStart(2,'\u00A0\u00A0')}:${String(this.minute).padStart(2,'0')}`
     }
 }
 
