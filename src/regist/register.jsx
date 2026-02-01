@@ -45,16 +45,16 @@ function Regist(){
     async function taskRegist(){
       let flag = 0;
       //入力バリデーション
-      if(taskNameRef.current.value == "" || (!(isAllDay) && (taskStartRef.current.value == "" || taskEndRef.current.value == "")) || (!(isHome) && taskGotoRef.current.value == "")){
+      if(taskNameRef.current.value === "" || (!(isAllDay) && (taskStartRef.current.value === "" || taskEndRef.current.value === "")) || (!(isHome) && taskGotoRef.current.value === "")){
         setModaldata(new ModalSelections('未入力項目があります',[new select("確認")]))
         await showModal()
         flag = 1
       }
-      if(date.isBefore(dateUtil.getToday()) && !(isBulk) && flag == 0){
+      if(date.isBefore(dateUtil.getToday()) && !(isBulk) && flag === 0){
         setModaldata(new ModalSelections('日付が本日かそれ以前ですが\nよろしいですか？',[new select("はい",COLORS.ok),new select("キャンセル")]))
         flag = await showModal();
       } 
-      if(isBulk && flag == 0){
+      if(isBulk && flag === 0){
         let includeBeforeDateFlag = false;
         for(let i = 0;i<bulkDates.length;i++){
           if(bulkDates[i].isBefore(dateUtil.getToday())){
@@ -66,7 +66,7 @@ function Regist(){
           flag = await showModal();
         }
       }
-      if(flag == 0){
+      if(flag === 0){
         setRegistState("登録中");
         const button = document.getElementById("regist");
         button.disabled = true;
@@ -88,7 +88,7 @@ function Regist(){
                   break
             }
             //あきらめるならこれ以上聞いても意味ない
-            if(result == 1){
+            if(result === 1){
               break
             }
           }
@@ -113,7 +113,7 @@ function Regist(){
                   break
             }
             //あきらめるならこれ以上聞いても意味ない
-            if(result == 1){
+            if(result === 1){
               break
             }
           }
@@ -162,7 +162,7 @@ function Regist(){
     function back(){
         navigate(`/infom`)
     }
-    if (date == null){
+    if (date === null){
       return(<p>読み込み中...</p>)
     }
       return(
@@ -233,8 +233,8 @@ function Calender(props){
     let firstIsInclude = null
     for(let i = 1;i<= Number(lastDay.format("DD"));i++){
       let serDate = dateUtil.stringToDate(dispDay.format("YYYY-MM-")+String(i));
-      if(day == serDate.format("d")){
-        if(firstIsInclude == null){
+      if(day === serDate.format("d")){
+        if(firstIsInclude === null){
           firstIsInclude = dateUtil.dateIncludes(bulkDates,serDate)
         }
         if(firstIsInclude){

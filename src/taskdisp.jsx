@@ -65,7 +65,7 @@ function TaskMenu(){
       //帰宅時間を計算
       for(let j = 0; j < parsonTask[i].length; j++){
         //在宅なら更新しない
-        if(parsonTask[i][j].isHome == GOOUT){
+        if(parsonTask[i][j].isHome === GOOUT){
         goOutTime = Math.min(goOutTime,parsonTask[i][j].start.toSeconds()-parsonTask[i][j].forgoto.toSeconds())
         goHomeTime = Math.max(goHomeTime,parsonTask[i][j].end.toSeconds()+parsonTask[i][j].forgoto.toSeconds())
         }
@@ -94,7 +94,7 @@ function TaskMenu(){
             <div>
               {[0, 1, 2, 3].map((i) => (
               <div key={i} className="border">
-                  出発時刻:{homeTime[i][0].toSeconds() == MAXTIME?<>未設定</>:<>{homeTime[i][0].disp()}</>} &rarr;&nbsp;帰宅時刻:{homeTime[i][1].toSeconds() <= 0 ? <>未設定</>:homeTime[i][1].toSeconds() === MAXTIME ? <>23:59以降</>:<>{homeTime[i][1].disp()}</>}
+                  出発時刻:{homeTime[i][0].toSeconds() === MAXTIME?<>未設定</>:<>{homeTime[i][0].disp()}</>} &rarr;&nbsp;帰宅時刻:{homeTime[i][1].toSeconds() <= 0 ? <>未設定</>:homeTime[i][1].toSeconds() === MAXTIME ? <>23:59以降</>:<>{homeTime[i][1].disp()}</>}
               {tasks[i].map((task, index) => (
               <div key={index} className = "topmargin">
                   <OnlyTask task={task} isLoading = {isLoading} setCousion = {setCousion}/>
@@ -112,7 +112,7 @@ function OnlyTask({task,isLoading,setCousion}){
   async function moveEdit(taskid){
     const targetTask = await taskUtil.getTaskDetails(taskid)
     let userId = localStorage.getItem('id');
-    if(targetTask.user_id == userId){
+    if(targetTask.user_id === userId){
       if(isLoading){
         setCousion("読み込み中のため、前回読み込んだ情報を表示しています\n!!!読み込み中は編集できません!!!")
         return null

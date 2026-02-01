@@ -22,12 +22,12 @@ function stringToDate(stringDate){
     const splitedStringDate = dateString[0].split("-")
     if(splitedStringDate.includes("")){
         throw new Error("string日付形式エラー");
-    }else if(splitedStringDate.length == 2){
+    }else if(splitedStringDate.length === 2){
         const year = Number(dayjs().format('YYYY'))
         const month = Number(splitedStringDate[0])
         const day = Number(splitedStringDate[1])
         return dayjs(new Date(year, month - 1, day));
-    }else if(splitedStringDate.length == 3){
+    }else if(splitedStringDate.length === 3){
         const year = Number(splitedStringDate[0])
         const month = Number(splitedStringDate[1])
         const day = Number(splitedStringDate[2])

@@ -105,7 +105,7 @@ function Edit(){
                 [new select(`すべて更新`,COLORS.ok),new select(`このタスクのみ更新する`)]))
             sameIdFlag = await showModal()
         }
-        const targetIds = sameIdFlag == 0 ? sameTaskid:[id]
+        const targetIds = sameIdFlag === 0 ? sameTaskid:[id]
         putList.current = targetIds
         for (const targetId of targetIds) {
             await loopcollapseTask(targetId);
@@ -137,7 +137,7 @@ function Edit(){
                         putList.current = putList.current.filter((pId)=>pId != targetid)
                         break
                 }
-                if(result == 1){
+                if(result === 1){
                     break
                 }
             }
@@ -164,7 +164,7 @@ function Edit(){
             setModaldata(new ModalSelections('今後同名のタスクが存在しますが、同様に削除しますか？',[new select("すべて削除する",COLORS.red),new select("このタスクのみ削除")]))
             sameIdFlag = await showModal()
         }
-        if(sameIdFlag == 0){
+        if(sameIdFlag === 0){
             await dltApi(sameTaskid)
         }
         else{

@@ -52,7 +52,7 @@ function Week(){
                                 </tr>
                                 {
                                     [1,2,3,4,5,6,7].map((i)=>{
-                                        if(i%2 == 1){
+                                        if(i%2 === 1){
                                             return(<OnlyTask personId = {parson} fromToday = {i} style = {styles.blueBorder}/>)
                                         }
                                         else{
@@ -98,7 +98,7 @@ function OnlyTask(props){
         };
         fetchTask();
     }, []); 
-    if(task.length == 0){
+    if(task.length === 0){
         return(
             <tr style = {styles.row || {}}>
                 <td style = {styles.narrowCell}>{dateUtil.getOnlyDate(date)}</td>

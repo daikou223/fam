@@ -90,7 +90,7 @@ export async function getCollapse(date,start,end,user_id){
     const fullTask = await initialized()
     let CollapseTask_ = []
     fullTask.tasks.map((atask)=>{
-        if(atask.date.isSame(date,"day") && atask.user_id == user_id){
+        if(atask.date.isSame(date,"day") && atask.user_id === user_id){
             const isCollapse = TimeUtil.timeCollapse(atask.start,atask.end,start,end)
             if(isCollapse){
                 CollapseTask_.push(atask.id)
@@ -153,7 +153,7 @@ export async function getTaskWithConditions(user,date){
         })
     }
     return FullTask.tasks.filter((task)=>{
-        return task.user_id === user && task.date.isSame(date,"day") && task.isHome == 1
+        return task.user_id === user && task.date.isSame(date,"day") && task.isHome === 1
     })
 }
 

@@ -113,7 +113,7 @@ function Select(){
         printingButton.disabled = true;
         const paramses = []
         selected.forEach((aSelect)=>aSelect.addParam(paramses))
-        if(paramses.length == 0){
+        if(paramses.length === 0){
             setModaldata(new ModalSelections(`なにも選択されていません`, 
             [new select(`OK`)]))
             setModalDisp(true);
@@ -180,14 +180,14 @@ function OneDay(props){
             <div style = {{marginRight: "15px"}}>
             {dayUtil.getOnlyDate(select.date)}
             </div>
-            <button className = "broButton" style = {select.shift == 0 ? styles.selected:styles.nonSelected} onClick={()=>update(0)}>なし</button>
-            <button className = "broButton" style = {select.shift == 1 ? styles.selected:styles.nonSelected} onClick={()=>update(1)}>A</button>
-            <button className = "broButton" style = {select.shift == 2 ? styles.selected:styles.nonSelected} onClick={()=>update(2)}>B</button>
-            <button className = "broButton" style = {select.shift == 3 ? styles.selected:styles.nonSelected} onClick={()=>update(3)}>C</button>
-            <button className = "broButton" style = {select.shift == 4 ? styles.selected:styles.nonSelected} onClick={()=>update(4)}>D</button>
-            <button className = "broButton" style = {select.shift == 5 ? styles.selected:styles.nonSelected} onClick={()=>update(5)}>E</button>
-            <button className = "broButton" style = {select.shift == 6 ? styles.selected:styles.nonSelected} onClick={()=>update(6)}>F</button>
-            <button className = "broButton" style = {select.shift == 7 ? styles.selected:styles.nonSelected} onClick={()=>update(7)}>夜</button>
+            <button className = "broButton" style = {select.shift === 0 ? styles.selected:styles.nonSelected} onClick={()=>update(0)}>なし</button>
+            <button className = "broButton" style = {select.shift === 1 ? styles.selected:styles.nonSelected} onClick={()=>update(1)}>A</button>
+            <button className = "broButton" style = {select.shift === 2 ? styles.selected:styles.nonSelected} onClick={()=>update(2)}>B</button>
+            <button className = "broButton" style = {select.shift === 3 ? styles.selected:styles.nonSelected} onClick={()=>update(3)}>C</button>
+            <button className = "broButton" style = {select.shift === 4 ? styles.selected:styles.nonSelected} onClick={()=>update(4)}>D</button>
+            <button className = "broButton" style = {select.shift === 5 ? styles.selected:styles.nonSelected} onClick={()=>update(5)}>E</button>
+            <button className = "broButton" style = {select.shift === 6 ? styles.selected:styles.nonSelected} onClick={()=>update(6)}>F</button>
+            <button className = "broButton" style = {select.shift === 7 ? styles.selected:styles.nonSelected} onClick={()=>update(7)}>夜</button>
             </table>
         </div>
     )
