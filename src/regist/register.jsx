@@ -233,8 +233,8 @@ function Calender(props){
     let firstIsInclude = null
     for(let i = 1;i<= Number(lastDay.format("DD"));i++){
       let serDate = dateUtil.stringToDate(dispDay.format("YYYY-MM-")+String(i));
-      if(day === serDate.format("d")){
-        if(firstIsInclude === null){
+      if(day == serDate.format("d")){
+        if(firstIsInclude == null){
           firstIsInclude = dateUtil.dateIncludes(bulkDates,serDate)
         }
         if(firstIsInclude){

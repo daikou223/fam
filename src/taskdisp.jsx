@@ -85,7 +85,7 @@ function TaskMenu(){
     }else{
       return(
           <div translate="no">
-            {<Menubar isActive = {isLoading} setCousion = {setCousion}/>}
+            <Menubar isActive = {isLoading} setCousion = {setCousion}/>
           <div className = "center">
             <button onClick = {()=>{setDate((prev)=>dateUtil.getYestaday(prev))}} className = "midiambutton">&lt;</button>
             <a class = "midiamletter">{dateUtil.dateFullDisplay(date)}({dateUtil.getDDDay(date)})</a>
@@ -112,7 +112,7 @@ function OnlyTask({task,isLoading,setCousion}){
   async function moveEdit(taskid){
     const targetTask = await taskUtil.getTaskDetails(taskid)
     let userId = localStorage.getItem('id');
-    if(targetTask.user_id === userId){
+    if(targetTask.user_id == userId){
       if(isLoading){
         setCousion("読み込み中のため、前回読み込んだ情報を表示しています\n!!!読み込み中は編集できません!!!")
         return null
