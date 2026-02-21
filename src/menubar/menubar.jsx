@@ -22,7 +22,7 @@ export default function Menubar(props){
         new menuItem("今日の予定","/infom"),
         new menuItem("予定登録","/register"),
         new menuItem("タスク検索","/serch"),
-        new menuItem("印刷用メニュー","/print")
+        new menuItem("印刷用メニュー","/PrintSetting")
     ]
     if(id === 2){
       menuTable.push(new menuItem("仕事登録画面","/bro"))

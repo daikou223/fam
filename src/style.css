@@ -184,3 +184,6 @@ ul{
 .calender th,td{
     width:30px;
 }
+body {
+  margin: 0;
+}

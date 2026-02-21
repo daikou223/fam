@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-//const dayjs = require("dayjs") //テストのときはこっち
+// const dayjs = require("dayjs") //テストのときはこっち
 
 //一日前のdayjsオブジェクトを返す
 function getYestaday(day){
@@ -82,12 +82,41 @@ function setDate(year,month,day){
 function dateIncludes(dates,targetDate){
     return dates.some(date => date.isSame(targetDate, 'day'))
 }
+
+function createCalenderData(year,month){
+    const firstDate = setDate(year,month-1,1);
+    let firstDay = firstDate.day()-1;
+    if(firstDay < 0){
+        firstDay = 6;
+    }
+    const calenderLeftDate = firstDate.add(-firstDay,"day");
+    let targetDate = calenderLeftDate;
+    let returnData = [];
+    let week = 0;
+    do{
+        returnData.push([
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null])
+        for(let i = 0;i<7;i++){
+            if(targetDate.month()+1 == month){
+            returnData[week][i] = targetDate;
+        }
+            targetDate = getTomorrow(targetDate);
+        }
+        week++
+    }while(targetDate.month()+1 == month)
+    return returnData;
+}
 function testFunc(){
-    console.log(dateFullDisplay(getFirstday(2003,10)))
-    console.log(dateFullDisplay(getFinalday(2003,10)))
+    console.log(createCalenderData(2026,1));
 }
 
-//testFunc()
+// testFunc()
 export {getYestaday,getTomorrow,getToday,stringToDate,dateToString,dateDisplay,dateFullDisplay,getDay,getDDDay
-    ,getFirstday,getFinalday,setDate,dateIncludes,getOnlyDate
+    ,getFirstday,getFinalday,setDate,dateIncludes,getOnlyDate,createCalenderData
 }

@@ -1,4 +1,5 @@
 import React,{useState,useEffect} from "react"
+import { useLocation } from "react-router-dom"
 import dayjs from "dayjs"
 import * as TaskUtil from './../class/TaskClass'
 import * as dayUtil from './../class/day'
@@ -11,6 +12,9 @@ export default function PrintDisplay(){
     const [broTask,setBroTask] = useState([])
     const [myTask,setMyTask] = useState([])
     const [days,setDays] = useState([])
+    const location = useLocation()
+    const data = location.state
+    console.log(data)
 
     const styles = {
         tableStyle:{
@@ -51,21 +55,11 @@ export default function PrintDisplay(){
             borderCollapse:"collapse",
         }
     }
-    function nextMonth(){
-        const month = dispDay.month()
-        const year = dispDay.year()
-        setDispDay(dayUtil.setDate(year,month+1,1) )
-    }
-    function prevMonth(){
-        const month = dispDay.month()
-        const year = dispDay.year()
-        setDispDay(dayUtil.setDate(year,month-1,1) )
-    }
     function dCss(d){
-        if(d.format("d") === 0){
+        if(d.format("d") == 0){
             return styles.sunday
         }
-        else if(d.format("d") === 6){
+        else if(d.format("d") == 6){
             return styles.staday
         }
         return styles.tableCell
@@ -76,15 +70,14 @@ export default function PrintDisplay(){
             const res = await TaskUtil.getMonthTask(dispDay)
             setBroTask(res.filter((t)=>t.user_id === 2))
             setMyTask(res.filter((t)=>t.user_id === 1))
-            const startDay = dayUtil.getFirstday(dispDay)
-            const endDay = dayUtil.getFinalday(dispDay)
+            const startDay = data.startDate
+            const endDay = dayUtil.getTomorrow(data.endDate)
             for(let targetDay = startDay;
                 targetDay.isBefore(endDay) || targetDay.isSame(endDay);
                 targetDay = dayUtil.getTomorrow(targetDay)){
                     _days.push(targetDay)
                 }
             setDays(_days)
-            console.log(res)
         }
         load()
     },[dispDay])
@@ -92,9 +85,6 @@ export default function PrintDisplay(){
         <div translate="no">
         <Menubar/>
         <div style = {styles.tableStyle}>
-        <button onClick = {prevMonth} className = "midiambutton">&lt;</button>
-        <a class = "midiamletter">{dispDay.format("YYYY年MM月")}</a>
-        <button onClick = {nextMonth} className = "midiambutton">&gt;</button>
         <table style = {styles.tableBody}>
             <tr><th></th>
             <th ></th>
@@ -111,8 +101,8 @@ export default function PrintDisplay(){
             <th style = {styles.tableCell}>曜</th>
             </tr>
             {days.map((d)=>{
-                const todayBroTask = broTask.filter((t)=>t.date.isSame(d))
-                const todayMyTask = myTask.filter((t)=>t.date.isSame(d))
+                const todayBroTask = broTask.filter((t)=>t.date.isSame(d,"day") && t.isHome === 1)
+                const todayMyTask = myTask.filter((t)=>t.date.isSame(d,"day") && t.isHome === 1)
                 return(
                 <tr>
                     <td style = {styles.tableCell}>{d.format("D")}</td>
