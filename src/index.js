@@ -7,10 +7,11 @@ import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} 
 import TaskMenu from './taskdisp';
 import Regist from './regist/register';
 import Edit from './regist/edit';
-import Div from './display/div';
 import Serch from './serch/taskSerch';
 import Select from './work-for-bro/select';
 import PrintDisplay from './display/printDisplay';
+import Test from './test/test';
+import PrintSettingScreen from './display/PrintSettingScreen';
 
 
 //ルート定義部分
@@ -19,10 +20,11 @@ const routesBasic = createBrowserRouter([
   { path:'/infom',element:<TaskMenu/>},
   { path: '/register',element:<Regist/>},
   { path: '/edit/:id',element:<Edit/>},
-  { path: '/div',element:<Div/>},
   { path: '/serch',element:<Serch/>},
   { path: '/bro',element:<Select/>},
+  { path: '/printSetting',element:<PrintSettingScreen/>},
   { path: '/print',element:<PrintDisplay/>},
+  { path:'/test',element:<Test/>},
   { path: '*', element: <div>404: Page Not Found</div> }
 ])
 const root = ReactDOM.createRoot(document.getElementById('root'));
