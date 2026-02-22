@@ -70,16 +70,17 @@ export default function Edit(){
             setState:setEnd
         },
         {
-            name:"移動時間",
-            type:INPUT_TYPE_NAME.TIME,
-            state:goto,
-            setState:setGoto
-        },
-        {
             name:"在宅",
             type:INPUT_TYPE_NAME.CHECKBOX,
             state:isHome,
             setState:setIsHome
+        },
+        {
+            name:"移動時間",
+            type:INPUT_TYPE_NAME.TIME,
+            state:goto,
+            setState:setGoto,
+            disabled:isHome
         },
         {
             name:"メモ",
