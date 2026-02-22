@@ -119,10 +119,10 @@ export default function Regist(){
         }
     }
 
-    const buttonData = {
+    const buttonDatas = [{
         text:"登録",
         click:buttonClick
-    }
+    }]
 
     return(
         <div style = {{marginTop:"70px"}}>
@@ -138,7 +138,7 @@ export default function Regist(){
                 }
             }}
         />
-            <Form renderItems = {renderItems} title = {"スケジュール登録"} buttonData={buttonData}/>
+            <Form renderItems = {renderItems} title = {"スケジュール登録"} buttonDatas={buttonDatas}/>
         </div>
     )
 }

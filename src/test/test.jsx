@@ -4,6 +4,7 @@ import Form from "../FormComponent/form";
 import * as dayUtil from './../class/day';
 import Time from "../class/Time";
 import Regist from "../regist/newRegist";
+import Edit from "../regist/newEdit";
 
 export default function Test(){
     const [textInput,setTextInput] = useState(""); 
@@ -50,6 +51,7 @@ export default function Test(){
     }
     return(
         // <Form title = "テスト" renderItems = {inputDatas} buttonData = {buttonData}/>
-        <Regist/>
+        // <Regist/>
+        <Edit/>
     )
 }

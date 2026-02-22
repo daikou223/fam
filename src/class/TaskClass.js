@@ -79,7 +79,7 @@ export async function getSameTask(name,date){
     const SameTask_ = []
     fullTask.tasks.map((task)=>{
         if(task.name === name && (date.isBefore(task.date) ||date.isSame(task.date)  )){
-            SameTask_.push(task.id)
+            SameTask_.push(task)
         }
     })
     return SameTask_

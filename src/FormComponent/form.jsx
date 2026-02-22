@@ -1,7 +1,7 @@
 import { useState } from "react"
 import FormItem from "./FormItem"
 
-export default function Form({renderItems,title,buttonData}){
+export default function Form({renderItems,title,buttonDatas}){
     return(
         <div>
             <div style = {styles.title}>{title}</div>
@@ -10,7 +10,9 @@ export default function Form({renderItems,title,buttonData}){
             }
             )}
             <div style = {styles.buttonWrapper}>
-            <Button buttonData = {buttonData}/>
+            {buttonDatas.map((buttonData)=>{
+                return(<Button buttonData = {buttonData}/>)
+                })}
             </div>
         </div>
     )

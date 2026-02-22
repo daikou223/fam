@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} 
 
 import TaskMenu from './taskdisp';
 import Regist from './regist/newRegist';
-import Edit from './regist/edit';
+import Edit from './regist/newEdit';
 import Serch from './serch/taskSerch';
 import Select from './work-for-bro/select';
 import PrintDisplay from './display/printDisplay';
@@ -25,6 +25,7 @@ const routesBasic = createBrowserRouter([
   { path: '/printSetting',element:<PrintSettingScreen/>},
   { path: '/print',element:<PrintDisplay/>},
   { path:'/test',element:<Test/>},
+  { path:'/test/:id',element:<Test/>},
   { path: '*', element: <div>404: Page Not Found</div> }
 ])
 const root = ReactDOM.createRoot(document.getElementById('root'));

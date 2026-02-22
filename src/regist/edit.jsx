@@ -96,16 +96,16 @@ function Edit(){
         const Dbutton = document.getElementById("delete");
         Dbutton.disabled = true;
         const taskDetail = await getTaskDetails(id)
-        const sameTaskid = await getSameTask(taskDetail.name,taskDetail.date)
+        const sameTasks = await getSameTask(taskDetail.name,taskDetail.date)
         //今更新しようとしているものも含まれる
         let sameIdFlag = 1
-        if(sameTaskid.length >= 2){
+        if(sameTasks.length >= 2){
             setModaldata(new ModalSelections(
                 "今後同名のタスクが存在しますが、同様に更新しますか？", 
                 [new select(`すべて更新`,COLORS.ok),new select(`このタスクのみ更新する`)]))
             sameIdFlag = await showModal()
         }
-        const targetIds = sameIdFlag === 0 ? sameTaskid:[id]
+        const targetIds = sameIdFlag === 0 ? sameTasks.map((task) => task.id):[id]
         putList.current = targetIds
         for (const targetId of targetIds) {
             await loopcollapseTask(targetId);
@@ -123,7 +123,8 @@ function Edit(){
     async function loopcollapseTask(targetid){
         const targetDetail = await getTaskDetails(targetid)
         const collapseTasks = await getCollapse(targetDetail.date,TimeUtil.StoTime(start),TimeUtil.StoTime(end),targetDetail.user_id)
-        for (const collapseId of collapseTasks) {
+        const collapseIds = collapseTasks.map((task)=>task.id)
+        for (const collapseId of collapseIds) {
             if(collapseId != targetid){
                 const collapseDetail = await getTaskDetails(collapseId);
                 setModaldata(new ModalSelections(`${collapseDetail.date.format("MM/DD")}「${collapseDetail.name}」と時間が重複しています`, 
@@ -157,15 +158,15 @@ function Edit(){
         const Dbutton = document.getElementById("delete");
         Dbutton.disabled = true;
         const taskDetail = await getTaskDetails(id)
-        const sameTaskid = await getSameTask(taskDetail.name,taskDetail.date)
+        const sameTasks = await getSameTask(taskDetail.name,taskDetail.date)
         //今削除しようとしているものも含まれる
         let sameIdFlag = false
-        if(sameTaskid.length >= 2){
+        if(sameTasks.length >= 2){
             setModaldata(new ModalSelections('今後同名のタスクが存在しますが、同様に削除しますか？',[new select("すべて削除する",COLORS.red),new select("このタスクのみ削除")]))
             sameIdFlag = await showModal()
         }
         if(sameIdFlag === 0){
-            await dltApi(sameTaskid)
+            await dltApi(sameTasks.map((task)=>task.id))
         }
         else{
             await dltApi([id])
