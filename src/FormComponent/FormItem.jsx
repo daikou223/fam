@@ -102,6 +102,16 @@ function TimeBox({
         10,11,12,13,14,15,16,17,18,19,
         20,21,22,23,24,25,26,27,28,29,30]
      const minutes = [0,5,10,15,20,25,30,35,40,45,50,55]
+
+    function hourDisp(num){
+             if(num < 0){
+                 return "\u00A0\u00A00時"
+             }
+             else if(num >= 24){
+                 return `翌${num-24}時`
+             }
+             return `${num}時`
+    }
     return(
         <div style = {styles.timeWrapper}>
             <select 
@@ -113,8 +123,8 @@ function TimeBox({
                     (prev) =>{
                 return(new Time(e.target.value,prev.minute,prev.second))
                 })}>
-            {hours.map((h) =>{return(<option value = {h}>{h.toString().padStart(2,'0')}</option>)})}
-            </select>&nbsp;:&nbsp; 
+            {hours.map((h) =>{return(<option value = {h}>{hourDisp(h)}</option>)})}
+            </select>
              <select
             style = {styles.timeInput}
              value = {state.minute}
@@ -124,7 +134,7 @@ function TimeBox({
                     (prev) =>{
                 return(new Time(prev.hour,e.target.value,prev.second))
                 })}>
-            {minutes.map((m) =>{return(<option value = {m}>{m.toString().padStart(2,'0')}</option>)})}
+            {minutes.map((m) =>{return(<option value = {m}>{m.toString().padStart(2,'0')}分</option>)})}
             </select>
         </div>
     )
