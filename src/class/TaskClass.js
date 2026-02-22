@@ -79,7 +79,7 @@ export async function getSameTask(name,date){
     const SameTask_ = []
     fullTask.tasks.map((task)=>{
         if(task.name === name && (date.isBefore(task.date) ||date.isSame(task.date)  )){
-            SameTask_.push(task.id)
+            SameTask_.push(task)
         }
     })
     return SameTask_
@@ -89,10 +89,10 @@ export async function getCollapse(date,start,end,user_id){
     const fullTask = await initialized()
     let CollapseTask_ = []
     fullTask.tasks.map((atask)=>{
-        if(atask.date.isSame(date,"day") && atask.user_id === user_id){
+        if(atask.date.isSame(date,"day") && atask.user_id == user_id){
             const isCollapse = TimeUtil.timeCollapse(atask.start,atask.end,start,end)
             if(isCollapse){
-                CollapseTask_.push(atask.id)
+                CollapseTask_.push(atask)
             }
         }
     })

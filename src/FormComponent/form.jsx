@@ -1,6 +1,7 @@
+import { useState } from "react"
 import FormItem from "./FormItem"
 
-export default function Form({renderItems,title,buttonData}){
+export default function Form({renderItems,title,buttonDatas}){
     return(
         <div>
             <div style = {styles.title}>{title}</div>
@@ -9,9 +10,26 @@ export default function Form({renderItems,title,buttonData}){
             }
             )}
             <div style = {styles.buttonWrapper}>
-            <button style = {styles.button} onClick = {buttonData.click}>{buttonData.text}</button>
+            {buttonDatas.map((buttonData)=>{
+                return(<Button buttonData = {buttonData}/>)
+                })}
             </div>
         </div>
+    )
+}
+
+function Button(
+    {buttonData}
+){
+    const [buttonDisable,setButtonDisable] = useState(false)
+    async function buttonClick(){
+        setButtonDisable(true)
+        await buttonData.click()
+        setButtonDisable(false)
+    }
+    return(
+        <button style = {styles.button} onClick = {buttonClick} disabled = {buttonDisable}>
+            {buttonData.text}</button>
     )
 }
 
