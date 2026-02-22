@@ -1,12 +1,14 @@
 import { INPUT_TYPE_NAME } from "../const";
 import { useState } from "react";
 import Form from "../FormComponent/form";
-import * as dayUtil from './../class/day'
+import * as dayUtil from './../class/day';
+import Time from "../class/Time";
+import Regist from "../regist/newRegist";
 
 export default function Test(){
     const [textInput,setTextInput] = useState(""); 
     const [checkBoxState,setCheckBoxState] = useState(false);
-    const [timeState,setTimeState] = useState({hour:12,minute:12});
+    const [timeState,setTimeState] = useState(new Time(12,12,0));
     const [dateState,setDateState] = useState([
         dayUtil.getToday()
     ]);
@@ -47,6 +49,7 @@ export default function Test(){
         click:buttonClick
     }
     return(
-        <Form title = "テスト" renderItems = {inputDatas} buttonData = {buttonData}/>
+        // <Form title = "テスト" renderItems = {inputDatas} buttonData = {buttonData}/>
+        <Regist/>
     )
 }

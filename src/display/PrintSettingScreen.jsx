@@ -39,7 +39,10 @@ export default function PrintSettingScreen(){
         }
     ]
     const buttonClick = async()=>{
-        if(endDate[0].diff(startDate[0],"day") < 0){
+        if(startDate.length === 0 || endDate.length === 0){
+            setModaldata(new ModalSelections('未入力項目があります。',[new select("確認")]))
+        }
+        else if(endDate[0].diff(startDate[0],"day") < 0){
             setModaldata(new ModalSelections('開始日付が終了日付を追い越しています',[new select("確認")]))
         }
         else if(endDate[0].diff(startDate[0],"day") > 31){

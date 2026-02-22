@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react"
+import React,{useState,useEffect, useRef} from "react"
 import { useLocation } from "react-router-dom"
 import dayjs from "dayjs"
 import * as TaskUtil from './../class/TaskClass'
@@ -12,9 +12,9 @@ export default function PrintDisplay(){
     const [broTask,setBroTask] = useState([])
     const [myTask,setMyTask] = useState([])
     const [days,setDays] = useState([])
+    const printedRef = useRef(false)
     const location = useLocation()
     const data = location.state
-    console.log(data)
 
     const styles = {
         tableStyle:{
@@ -81,6 +81,15 @@ export default function PrintDisplay(){
         }
         load()
     },[dispDay])
+
+    useEffect(() => {
+        if(!printedRef.current){   
+        printedRef.current = true;
+        requestAnimationFrame(() => {
+            window.print()
+        })}
+    }, [])
+
     return(
         <div translate="no">
         <Menubar/>

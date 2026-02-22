@@ -1,18 +1,33 @@
 import {useState} from "react";
 import { INPUT_TYPE_NAME } from "../const";
 import * as dateUtil from "../class/day";
+import Time from "../class/Time";
 
 export default function FormItem({item}){
     const type = item.type; 
     const name = item.name;
     const state = item.state;
     const setState = item.setState;
+    const disabled = item.disabled
     return(
-        <div style = {type !== INPUT_TYPE_NAME.CALENDER ? styles.inputWrapper : styles.calenderWrapper}>
+        <div style = {createItemStyle(type,disabled)}>
         <div style = {styles.label}><div>{name}</div></div>
-        {inputSwitcher(item,state,setState,type)}
+        {inputSwitcher(item,state,setState,type,disabled)}
         </div>
     )
+}
+
+function createItemStyle(type,disabled){
+    let styleObj = {}
+    if(disabled){
+        styleObj = {...styleObj,...styles.indisabled}
+    }
+    if(type !== INPUT_TYPE_NAME.CALENDER){
+        styleObj = {...styleObj,...styles.inputWrapper}
+    }else{
+        styleObj = {...styleObj,...styles.calenderWrapper}
+    }
+    return styleObj
 }
 
 function dispData(state){
@@ -27,28 +42,35 @@ function dispData(state){
     }
 }
 
-function inputSwitcher(item,state,setState,type){
+function inputSwitcher(item,state,setState,type,disabled){
     switch(type){
         case INPUT_TYPE_NAME.TEXT:
-            return(<TextForm state = {state} setState = {setState}/>)
+            return(<TextForm state = {state} setState = {setState} disabled = {disabled}/>)
         case INPUT_TYPE_NAME.CHECKBOX:
-            return(<CheckBox state = {state} setState = {setState}/>)
+            return(<CheckBox state = {state} setState = {setState} disabled = {disabled}/>)
         case INPUT_TYPE_NAME.TIME:
-            return(<Time state = {state} setState = {setState}/>)
+            return(<TimeBox state = {state} setState = {setState} disabled = {disabled}/>)
         case INPUT_TYPE_NAME.CALENDER:
             const isBulk = item?.isBulk
             const setIsBulk = item?.setIsBulk
-            return(<Calender state = {state} setState = {setState} isBulk = {isBulk} setIsBulk = {setIsBulk}/>)
+            return(
+            <Calender 
+                state = {state} setState = {setState} 
+                isBulk = {isBulk} setIsBulk = {setIsBulk} 
+                disabled = {disabled}
+            />)
     }
 }
 
 function TextForm({
     state,
-    setState
+    setState,
+    disabled
 }){
     return(
             <input 
             value = {state}
+            disabled={disabled}
             onChange = {(e)=>setState(e.target.value)}
             style = {styles.inputer}
             />
@@ -57,21 +79,24 @@ function TextForm({
 
 function CheckBox({
     state,
-    setState
+    setState,
+    disabled
 }){
     return(
             <input 
             type = "checkbox"
             checked = {state}
+            disabled={disabled}
             onChange = {(e)=>setState(e.target.checked)}
             style = {styles.inputer}
             />
     )
 }
 
-function Time({
+function TimeBox({
     state,
-    setState
+    setState,
+    disabled
 }){
     const hours = [0,1,2,3,4,5,6,7,8,9,
         10,11,12,13,14,15,16,17,18,19,
@@ -82,20 +107,22 @@ function Time({
             <select 
             style = {styles.timeInput}
             value = {state.hour}
+            disabled={disabled}
             onChange = {
                 (e)=>setState(
                     (prev) =>{
-                return({hour:e.target.value,minute:prev.minute})
+                return(new Time(e.target.value,prev.minute,prev.second))
                 })}>
             {hours.map((h) =>{return(<option value = {h}>{h.toString().padStart(2,'0')}</option>)})}
-            </select>:
-            <select
+            </select>&nbsp;:&nbsp; 
+             <select
             style = {styles.timeInput}
              value = {state.minute}
+             disabled={disabled}
              onChange = {
                 (e)=>setState(
                     (prev) =>{
-                return({hour:prev.hour,minute:e.target.value})
+                return(new Time(prev.hour,e.target.value,prev.second))
                 })}>
             {minutes.map((m) =>{return(<option value = {m}>{m.toString().padStart(2,'0')}</option>)})}
             </select>
@@ -105,7 +132,8 @@ function Time({
 
 function Calender({
     state,setState,
-    isBulk,setIsBulk
+    isBulk,setIsBulk,
+    disabled
 }){
     const [targetDate,setTargetDate] = useState(dateUtil.getToday());
     const calenderData = dateUtil.createCalenderData(targetDate.year(),targetDate.month()+1);
@@ -169,11 +197,12 @@ function Calender({
 function Day({
     day,state,setState,isBulk = false
 }){
+    if(day == null) return(<td></td>);
     return(
     <td 
     style = {!!(state.find((date)=>date.isSame(day,"day"))) ? styles.isSelected:styles.nonSelected}
     onClick = {()=>dayClick(state,setState,day,isBulk)}>
-        {day !== null ? day.date():""}
+    {day.date()}
     </td>)
 }
 
@@ -243,5 +272,8 @@ const styles = {
     },
     nonSelected:{
         height:"26px",
+    },
+    indisabled:{
+        backgroundColor:"gray"
     }
 }

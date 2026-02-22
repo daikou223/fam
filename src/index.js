@@ -5,7 +5,7 @@ import axios from "axios";
 import { createBrowserRouter, RouterProvider,useNavigate,useLocation,useParams} from 'react-router-dom';
 
 import TaskMenu from './taskdisp';
-import Regist from './regist/register';
+import Regist from './regist/newRegist';
 import Edit from './regist/edit';
 import Serch from './serch/taskSerch';
 import Select from './work-for-bro/select';
